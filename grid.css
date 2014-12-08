@@ -1,0 +1,33 @@
+html,body {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+	background: black;
+}
+
+.flex_column {
+	display: flex;
+	flex-flow: column;
+	flex-direction: column;
+	height: 100%;
+}
+
+#svg_container {
+	flex: 2;
+}
+
+#svg_container {
+	margin: 0;
+	padding: 0;
+}
+
+#select_container {
+	text-align: center;
+	padding: 10px;
+}
+
+svg {
+	shape-rendering: crispEdges;
+	vertical-align:top; /* Fix to remove unwanted 5px padding in html */
+}
