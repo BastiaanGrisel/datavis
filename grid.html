@@ -26,10 +26,6 @@
 		// Create a tile for each grid position
 		tiles = [];
 
-		// for(i = 0; i < size[0]; i++)
-		// 	for(j = 0; j < size[1]; j++)
-		// 		tiles.push(new Tile(i,j));
-
 		// Populate grid
 		var baseurl 	= "http://localhost:8888/";
 
@@ -40,8 +36,10 @@
 			timepoint 	= time_el.options[time_el.selectedIndex].value;
 
 		d3.json(baseurl + "locations/" + match + "/" + timepoint, function (json) {
+			tiles = [];
+			
 			json.forEach(function(player) {
-				tiles.push(new Tile(player.x, player.y))
+				tiles.push(new Tile(player.x, player.y, player.team))
 			});
 			
 			updateGrid(tiles);

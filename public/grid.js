@@ -16,6 +16,13 @@ var grid = svg.append("g")
     .attr("height", grid_height)
     // Position the grid to the center of the page
     .attr("transform","translate("+ Math.floor( (canvas_width - grid_width)/2 ) +","+ Math.floor( (canvas_height - grid_height)/2 ) +")")
+    
+var image = grid.append("svg:image")
+    .attr("xlink:href", "map.jpg")
+    .attr("width", grid_width)
+    .attr("height", grid_height)
+    .attr("x","0")
+    .attr("y","0")
 
 // Define domain and range for the position of the tiles
 var x = d3.scale.ordinal()
@@ -24,34 +31,30 @@ var x = d3.scale.ordinal()
 
 var y = d3.scale.ordinal()
     .domain(d3.range(size[1]))
-    .rangeBands([0,grid_height]);
+    .rangeBands([grid_height,0]);
 
 // Display data
-var color = d3.scale.category20();
-
 function updateGrid(tiles) {
     grid.selectAll("rect")
     .data(tiles)
     .enter()
-    .append("rect")
-    .attr("width", function(d) {
-        return x.rangeBand();
+    .append("circle")
+    .attr("r", function(d) {
+        return x.rangeBand()/2;
     })
-    .attr("height", function(d) {
-        return y.rangeBand();
-    })
-    .attr("x", function(d) {
+    .attr("cx", function(d) {
         return x(d.col);
     })
-    .attr("y", function(d) {
+    .attr("cy", function(d) {
         return y(d.row);
     })
     .attr("fill", function(d,i) {
-        return color(i);
+        return d.team == "radiant" ? "blue" : "red";
     })
 }
 
-function Tile(row, col) {
+function Tile(col, row, team) {
 	this.row = row;
 	this.col = col;
+    this.team = team;
 }
