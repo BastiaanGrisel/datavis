@@ -31,3 +31,8 @@ svg {
 	shape-rendering: crispEdges;
 	vertical-align:top; /* Fix to remove unwanted 5px padding in html */
 }
+
+#control_container {
+	text-align: center;
+	padding: 10px;
+}
