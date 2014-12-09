@@ -23,24 +23,29 @@
 
 	<script src="grid.js" type="text/javascript"></script>
 	<script>
-		// // Populate select boxes
-		// var baseurl = "http://localhost:8888/";
-
-		// d3.json(baseurl + "matches", function (json) {
-		// 	d3.select("#matches")
-		// 		.enter(json)
-		// 		.append("option")
-		// 		.attr("value", function(d) {
-		// 			return d;
-		// 		})
-  //       });
-
 		// Create a tile for each grid position
 		tiles = [];
 
-		for(i = 0; i < size[0]; i++)
-			for(j = 0; j < size[1]; j++)
-				tiles.push(new Tile(i,j));
+		// for(i = 0; i < size[0]; i++)
+		// 	for(j = 0; j < size[1]; j++)
+		// 		tiles.push(new Tile(i,j));
+
+		// Populate grid
+		var baseurl 	= "http://localhost:8888/";
+
+		var match_el 	= document.getElementById('matches'),
+			time_el 	= document.getElementById('time');
+
+		var match 		= match_el.options[match_el.selectedIndex].value,
+			timepoint 	= time_el.options[time_el.selectedIndex].value;
+
+		d3.json(baseurl + "locations/" + match + "/" + timepoint, function (json) {
+			json.forEach(function(player) {
+				tiles.push(new Tile(player.x, player.y))
+			});
+			
+			updateGrid(tiles);
+        });
 
 		updateGrid(tiles);
 	</script>

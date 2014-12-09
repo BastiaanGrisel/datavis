@@ -30,17 +30,29 @@ router.get("/grid", function(request, response) {
 	});
 });
 
-router.get("/matches", function(request, response) {
+router.get("/locations/:match/:timepoint", function(request, response) {
+	var match = request.params.match;
+	var timepoint = request.params.timepoint;
 
-	db.locations.distinct('match', function(err, records) {
+	getLocations(match, timepoint, function(err, records) {
 		if(err) response.writeHead(500);
 
 		response.writeHead(200, {"Content-Type": "text/json", "Access-Control-Allow-Origin": "*"});
 		response.write(JSON.stringify(records));
 		response.end();
 	});
-
 });
+
+function getLocations(match, timepoint, callback) {
+	match 		= parseInt(match);
+	timepoint 	= parseInt(timepoint);
+
+	if(Array.isArray(timepoint)) {
+		db.locations.find({'match': match, $or: timepoint.map(function(t) { return {'tsync': t}; }) }, callback);
+	} else {
+		db.locations.find({'match': match, 'tsync': timepoint}, callback);
+	}
+}
 
 function getMatches(callback) {
 	db.locations.distinct('match', callback);
