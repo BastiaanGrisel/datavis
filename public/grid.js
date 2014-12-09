@@ -36,21 +36,21 @@ var y = d3.scale.ordinal()
 // Display data
 function updateGrid(tiles) {
     grid.selectAll("rect")
-    .data(tiles)
-    .enter()
-    .append("circle")
-    .attr("r", function(d) {
-        return x.rangeBand()/2;
-    })
-    .attr("cx", function(d) {
-        return x(d.col);
-    })
-    .attr("cy", function(d) {
-        return y(d.row);
-    })
-    .attr("fill", function(d,i) {
-        return d.team == "radiant" ? "blue" : "red";
-    })
+        .data(tiles)
+        .enter()
+        .append("circle")
+        .attr("r", function(d) {
+            return x.rangeBand()/2;
+        })
+        .attr("cx", function(d) {
+            return x(d.col);
+        })
+        .attr("cy", function(d) {
+            return y(d.row);
+        })
+        .attr("fill", function(d,i) {
+            return d.team == "radiant" ? "blue" : "red";
+        })
 }
 
 function Tile(col, row, team) {

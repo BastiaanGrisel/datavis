@@ -23,9 +23,6 @@
 
 	<script src="grid.js" type="text/javascript"></script>
 	<script>
-		// Create a tile for each grid position
-		tiles = [];
-
 		// Populate grid
 		var baseurl 	= "http://localhost:8888/";
 
@@ -59,6 +56,20 @@
 					var option = new Option(timepoint, timepoint);
 					time_el.appendChild(option);
 				});
+	        });
+        });	
+
+        d3.select("#time").on("change", function(){ 
+			var selected_time = time_el.options[time_el.selectedIndex].value;
+
+			d3.json(baseurl + "locations/" + match + "/" + selected_time, function (json) {
+				tiles = [];
+
+				json.forEach(function(player) {
+					tiles.push(new Tile(player.x, player.y, player.team))
+				});
+				
+				updateGrid(tiles);
 	        });
         });	
 	</script>
