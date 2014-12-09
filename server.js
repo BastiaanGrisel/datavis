@@ -6,14 +6,28 @@ var http 	= require("http"),
 	db 		= mongojs.connect("mongodb://localhost:27017/dota", ["locations", "distances", "zones"]),
 	server 	= http.createServer(router);
 
+
 // Serve grid 
 router.get("/grid", function(request, response) {
 	response.writeHead(200, {"Content-Type": "text/html"});
 
-	var html = swig.renderFile("grid.html");
+	getMatches(function onMatches(err, records) {
+		var matches = records;
 
-	response.write(html);
-	response.end();
+		getTimepoints(matches[0], function onTimepoints(err, records) {
+			var timepoints = records;
+
+			var html = swig.renderFile("grid.html", {
+				selected_match: matches[0],
+				selected_timepoint: timepoints[0],
+				matches: matches,
+				timepoints: timepoints
+			});
+
+			response.write(html);
+			response.end();
+		});
+	});
 });
 
 router.get("/matches", function(request, response) {
@@ -27,5 +41,13 @@ router.get("/matches", function(request, response) {
 	});
 
 });
+
+function getMatches(callback) {
+	db.locations.distinct('match', callback);
+}
+
+function getTimepoints(match, callback) {
+	db.locations.distinct('tsync', { 'match': match }, callback);
+}
 
 server.listen(8888);
