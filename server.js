@@ -43,9 +43,22 @@ router.get("/locations/:match/:timepoint", function(request, response) {
 	});
 });
 
+router.get("/timepoints/:match", function(request, response) {
+	var match = request.params.match;
+	var timepoint = request.params.timepoint;
+
+	getTimepoints(match, function(err, records) {
+		if(err) response.writeHead(500);
+
+		response.writeHead(200, {"Content-Type": "text/json", "Access-Control-Allow-Origin": "*"});
+		response.write(JSON.stringify(records));
+		response.end();
+	});
+});
+
 function getLocations(match, timepoint, callback) {
-	match 		= parseInt(match);
-	timepoint 	= parseInt(timepoint);
+	var match 		= parseInt(match);
+	var timepoint 	= parseInt(timepoint);
 
 	if(Array.isArray(timepoint)) {
 		db.locations.find({'match': match, $or: timepoint.map(function(t) { return {'tsync': t}; }) }, callback);
@@ -59,6 +72,8 @@ function getMatches(callback) {
 }
 
 function getTimepoints(match, callback) {
+	var match = parseInt(match);
+	
 	db.locations.distinct('tsync', { 'match': match }, callback);
 }
 

@@ -37,7 +37,7 @@
 
 		d3.json(baseurl + "locations/" + match + "/" + timepoint, function (json) {
 			tiles = [];
-			
+
 			json.forEach(function(player) {
 				tiles.push(new Tile(player.x, player.y, player.team))
 			});
@@ -45,7 +45,22 @@
 			updateGrid(tiles);
         });
 
-		updateGrid(tiles);
+        // Check for changes in select boxes
+        d3.select("#matches").on("change", function(){ 
+			var selected_match = match_el.options[match_el.selectedIndex].value;
+
+			d3.json(baseurl + "timepoints/" + selected_match, function (json) {
+				// Remove current times
+				while (time_el.firstChild) {
+				    time_el.removeChild(time_el.firstChild);
+				}
+
+				json.forEach(function(timepoint) {
+					var option = new Option(timepoint, timepoint);
+					time_el.appendChild(option);
+				});
+	        });
+        });	
 	</script>
 </body>
 </html>
