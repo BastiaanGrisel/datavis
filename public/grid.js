@@ -16,7 +16,9 @@ var grid = svg.append("g")
     .attr("height", grid_height)
     // Position the grid to the center of the page
     .attr("transform","translate("+ Math.floor( (canvas_width - grid_width)/2 ) +","+ Math.floor( (canvas_height - grid_height)/2 ) +")")
-    
+
+var grid_defs = grid.append("defs"); 
+
 var image = grid.append("svg:image")
     .attr("xlink:href", "map.jpg")
     .attr("width", grid_width)
@@ -58,9 +60,38 @@ function drawDistances(tiles) {
       return a.concat(b);
     });
 
+    var circles = distances.filter(function(d) { return d.sort != "min"; })
+    var masks   = distances.filter(function(d) { return d.sort == "min"; })
+
+    console.log(circles, masks)
+
+    //Define masks
+    grid_defs.selectAll(".mask")
+        .data(masks)
+            .attr("cx", function(d) {
+                return d.team == "radiant" ? grid_width : "0";
+            })
+            .attr("cy", function(d) {
+                return d.team == "radiant" ? "0" : grid_height;
+            })
+        .enter()
+            .append("mask")
+            .attr("class", "mask")
+            .attr("id", function(d) {
+                return d.team;
+            })
+            .append("circle")
+            .attr("cx", function(d) {
+                return d.team == "radiant" ? grid_width : "0";
+            })
+            .attr("cy", function(d) {
+                return d.team == "radiant" ? "0" : grid_height;
+            })
+            .attr("r", function(d){return d.val})
+
     // Draw circles
     grid.selectAll(".distance")
-        .data(distances)
+        .data(circles)
             .attr("r", function(d){return d.val})
         .enter()
             .append("circle")
@@ -76,38 +107,9 @@ function drawDistances(tiles) {
             })
             .attr("opacity", "0.1")
             .attr("r", function(d){return d.val})
-
-
-    // var radiant = tiles.filter(function(d) { return d.team == "radiant" }),
-    //     dire    = tiles.filter(function(d) { return d.team == "dire" }),
-    //     base_r  = [0,grid_height],
-    //     base_d  = [grid_width,0];
-
-    //     radiant_d = radiant.map(function(d){ return distanceTo(base_r[0], base_r[1], x(d.col), y(d.row)) });
-    //     dire_d    = dire.map(function(d){ return distanceTo(base_d[0], base_d[1], x(d.col), y(d.row)) });
-
-    //     max_radiant_d = d3.max(radiant_d);
-    //     avg_radiant_d = d3.mean(radiant_d);
-    //     min_radiant_d = d3.min(radiant_d);
-
-    //     max_dire_d = d3.max(dire_d);
-    //     avg_dire_d = d3.mean(dire_d);
-    //     min_dire_d = d3.min(dire_d);
-
-    //     // console.log(radiant_d, dire_d, [min_radiant_d, avg_radiant_d, min_radiant_d])
-
-    //     // Draw circles
-    //     grid.selectAll(".distance")
-    //         .data([min_radiant_d, avg_radiant_d, max_radiant_d])
-    //             .attr("r", function(d){return d})
-    //         .enter()
-    //             .append("circle")
-    //             .attr("class", "distance")
-    //             .attr("cx", "0")
-    //             .attr("cy", grid_height)
-    //             .attr("fill", "blue")
-    //             .attr("opacity", "0.1")
-    //             .attr("r", function(d){return d})
+            .attr("mask", function(d) {
+                return "url(#"+d.team+")";
+            })
 }
 
 function DistanceCircle(team, sort, val) {
