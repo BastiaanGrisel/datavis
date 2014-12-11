@@ -11,7 +11,12 @@
 				  <option value="{{match}}" {% if match == selected_match %}selected{% endif %}>{{match}}</option>
 				{% endfor %}
 			</select>
-			<select id="time">
+			<select id="start_time">
+				{% for timepoint in timepoints %}
+				  <option value="{{timepoint}}" {% if timepoint == selected_timepoint %}selected{% endif %}>{{timepoint}}</option>
+				{% endfor %}
+			</select>
+			<select id="end_time">
 				{% for timepoint in timepoints %}
 				  <option value="{{timepoint}}" {% if timepoint == selected_timepoint %}selected{% endif %}>{{timepoint}}</option>
 				{% endfor %}
@@ -26,13 +31,15 @@
 		// Populate grid
 		var baseurl 	= "http://localhost:8888/";
 
-		var match_el 	= document.getElementById('matches'),
-			time_el 	= document.getElementById('time');
+		var match_el 		= document.getElementById('matches'),
+			start_time_el 	= document.getElementById('start_time'),
+			end_time_el		= document.getElementById('end_time');
 
 		var match 		= match_el.options[match_el.selectedIndex].value,
-			timepoint 	= time_el.options[time_el.selectedIndex].value;
+			start_time 	= start_time_el.options[start_time_el.selectedIndex].value;
+			end_time 	= end_time_el.options[end_time_el.selectedIndex].value;
 
-		d3.json(baseurl + "locations/" + match + "/" + timepoint, function (json) {
+		d3.json(baseurl + "locations/" + match + "/" + start_time + "/" + end_time, function (json) {
 			tiles = [];
 
 			json.forEach(function(player) {
@@ -60,9 +67,10 @@
         });	
 
         d3.select("#time").on("change", function(){ 
-			var selected_time = time_el.options[time_el.selectedIndex].value;
+			var selected_start_time 		= start_time_el.options[start_time_el.selectedIndex].value;
+			var selected_end_time 			= end_time_el.options[end_time_el.selectedIndex].value;
 
-			d3.json(baseurl + "locations/" + match + "/" + selected_time, function (json) {
+			d3.json(baseurl + "locations/" + match + "/" + selected_start_time + "/" + selected_end_time, function (json) {
 				tiles = [];
 				
 				json.forEach(function(player) {

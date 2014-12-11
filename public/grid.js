@@ -35,9 +35,9 @@ var y = d3.scale.ordinal()
     .rangeBands([grid_height,0]);
 
 // Display data
-function updateGrid(tiles) {
+function updateGrid(tiles, connections) {
 
-    grid.selectAll("circle").data(tiles)
+    grid.selectAll("circle").data(tiles) // Update existing elements
             .attr("r", function(d) {
                 return x.rangeBand()/2;
             })
@@ -65,6 +65,7 @@ function updateGrid(tiles) {
                 return d.team == "radiant" ? "blue" : "red";
             })
 
+    // Remove redundant circles
     grid.selectAll("circle").data(tiles).exit().remove();
 }
 
@@ -72,4 +73,10 @@ function Tile(col, row, team) {
 	this.row = row;
 	this.col = col;
     this.team = team;
+}
+
+// A link between two tiles
+function Link(from, to) {
+    this.from = from;
+    this.to = to;
 }

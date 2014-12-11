@@ -30,11 +30,12 @@ router.get("/grid", function(request, response) {
 	});
 });
 
-router.get("/locations/:match/:timepoint", function(request, response) {
-	var match = request.params.match;
-	var timepoint = request.params.timepoint;
+router.get("/locations/:match/:start_time/:end_time", function(request, response) {
+	var match 		= request.params.match;
+	var start_time 	= request.params.start_time;
+	var end_time 	= request.params.end_time;
 
-	getLocations(match, timepoint, function(err, records) {
+	getLocations(match, start_time, end_time, function(err, records) {
 		if(err) response.writeHead(500);
 
 		response.writeHead(200, {"Content-Type": "text/json", "Access-Control-Allow-Origin": "*"});
@@ -56,15 +57,22 @@ router.get("/timepoints/:match", function(request, response) {
 	});
 });
 
-function getLocations(match, timepoint, callback) {
-	var match 		= parseInt(match);
-	var timepoint 	= parseInt(timepoint);
+function getLocations(match, start_time, callback) {
+	getLocations(match, start_time, start_time, callback);
+}
 
-	if(Array.isArray(timepoint)) {
-		db.locations.find({'match': match, $or: timepoint.map(function(t) { return {'tsync': t}; }) }, callback);
-	} else {
-		db.locations.find({'match': match, 'tsync': timepoint}, callback);
-	}
+function getLocations(match, start, end, callback) {
+	var match 		= parseInt(match);
+	var start_time 	= parseInt(start) < parseInt(end) ? parseInt(start) : parseInt(end);
+	var end_time 	= parseInt(start) < parseInt(end) ? parseInt(end) : parseInt(start);
+	var timepoints  = [];
+
+	for(t = start_time; t <= end_time; t++)
+		timepoints.push(t)
+
+	console.log(start_time, end_time, timepoints)
+
+	db.locations.find({'match': match, $or: timepoints.map(function(t) { return {'tsync': t}; }) }, callback);
 }
 
 function getMatches(callback) {
