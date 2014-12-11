@@ -23,6 +23,7 @@ var image = grid.append("svg:image")
     .attr("height", grid_height)
     .attr("x","0")
     .attr("y","0")
+    .attr("opacity", "0.4")
 
 // Define domain and range for the position of the tiles
 var x = d3.scale.ordinal()
@@ -35,22 +36,36 @@ var y = d3.scale.ordinal()
 
 // Display data
 function updateGrid(tiles) {
-    grid.selectAll("rect")
-        .data(tiles)
-        .enter()
-        .append("circle")
-        .attr("r", function(d) {
-            return x.rangeBand()/2;
-        })
-        .attr("cx", function(d) {
-            return x(d.col);
-        })
-        .attr("cy", function(d) {
-            return y(d.row);
-        })
-        .attr("fill", function(d,i) {
-            return d.team == "radiant" ? "blue" : "red";
-        })
+
+    grid.selectAll("circle").data(tiles)
+            .attr("r", function(d) {
+                return x.rangeBand()/2;
+            })
+            .attr("cx", function(d) {
+                return x(d.col);
+            })
+            .attr("cy", function(d) {
+                return y(d.row);
+            })
+            .attr("fill", function(d,i) {
+                return d.team == "radiant" ? "blue" : "red";
+            })
+        .enter() // Add new circles if necessary
+            .append("circle")
+            .attr("r", function(d) {
+                return x.rangeBand()/2;
+            })
+            .attr("cx", function(d) {
+                return x(d.col);
+            })
+            .attr("cy", function(d) {
+                return y(d.row);
+            })
+            .attr("fill", function(d,i) {
+                return d.team == "radiant" ? "blue" : "red";
+            })
+
+    grid.selectAll("circle").data(tiles).exit().remove();
 }
 
 function Tile(col, row, team) {

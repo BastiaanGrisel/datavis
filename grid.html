@@ -64,7 +64,7 @@
 
 			d3.json(baseurl + "locations/" + match + "/" + selected_time, function (json) {
 				tiles = [];
-
+				
 				json.forEach(function(player) {
 					tiles.push(new Tile(player.x, player.y, player.team))
 				});
