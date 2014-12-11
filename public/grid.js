@@ -66,10 +66,10 @@ function drawDistances(tiles) {
             .append("circle")
             .attr("class", "distance")
             .attr("cx", function(d) {
-                return d.team == "radiant" ? "0" : grid_width;
+                return d.team == "radiant" ? grid_width : "0";
             })
             .attr("cy", function(d) {
-                return d.team == "radiant" ? grid_height : "0";
+                return d.team == "radiant" ? "0" : grid_height;
             })
             .attr("fill", function(d){
                 return d.team == "radiant" ? "blue" : "red";
@@ -202,7 +202,7 @@ function Tile(col, row, team, name, visible) {
     }
 
     this.distanceToBase = function() {
-        return this.team == "radiant" ? distanceTo(0, grid_height, x(this.col), y(this.row)) : distanceTo(grid_width, 0, x(this.col), y(this.row));
+        return this.team == "radiant" ? distanceTo(grid_height, 0, x(this.col), y(this.row)) : distanceTo(0, grid_width, x(this.col), y(this.row));
 
         function distanceTo(x1,y1,x2,y2) {
             function sq(x){ return x*x }
