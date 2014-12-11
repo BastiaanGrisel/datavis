@@ -38,9 +38,88 @@ var color = d3.scale.category10();
 
 // Display data
 function updateGrid(tiles) {
+    drawPlayers(tiles);
+    drawLinks(tiles);
+    drawDistances(tiles);
+}
 
+function drawDistances(tiles) {
+    var teams = d3.nest()
+        .key(function(d){ return d.team })
+        .entries(tiles);
+
+    var distances = teams.map(function(d){
+        return [
+            new DistanceCircle(d.key, "min", d3.min(d.values, function(d){ return d.distanceToBase(); })),
+            new DistanceCircle(d.key, "mean", d3.mean(d.values, function(d){ return d.distanceToBase(); })),
+            new DistanceCircle(d.key, "max", d3.max(d.values, function(d){ return d.distanceToBase(); }))
+        ]
+    }).reduce(function(a, b) {
+      return a.concat(b);
+    });
+
+    // Draw circles
+    grid.selectAll(".distance")
+        .data(distances)
+            .attr("r", function(d){return d.val})
+        .enter()
+            .append("circle")
+            .attr("class", "distance")
+            .attr("cx", function(d) {
+                return d.team == "radiant" ? "0" : grid_width;
+            })
+            .attr("cy", function(d) {
+                return d.team == "radiant" ? grid_height : "0";
+            })
+            .attr("fill", function(d){
+                return d.team == "radiant" ? "blue" : "red";
+            })
+            .attr("opacity", "0.1")
+            .attr("r", function(d){return d.val})
+
+
+    // var radiant = tiles.filter(function(d) { return d.team == "radiant" }),
+    //     dire    = tiles.filter(function(d) { return d.team == "dire" }),
+    //     base_r  = [0,grid_height],
+    //     base_d  = [grid_width,0];
+
+    //     radiant_d = radiant.map(function(d){ return distanceTo(base_r[0], base_r[1], x(d.col), y(d.row)) });
+    //     dire_d    = dire.map(function(d){ return distanceTo(base_d[0], base_d[1], x(d.col), y(d.row)) });
+
+    //     max_radiant_d = d3.max(radiant_d);
+    //     avg_radiant_d = d3.mean(radiant_d);
+    //     min_radiant_d = d3.min(radiant_d);
+
+    //     max_dire_d = d3.max(dire_d);
+    //     avg_dire_d = d3.mean(dire_d);
+    //     min_dire_d = d3.min(dire_d);
+
+    //     // console.log(radiant_d, dire_d, [min_radiant_d, avg_radiant_d, min_radiant_d])
+
+    //     // Draw circles
+    //     grid.selectAll(".distance")
+    //         .data([min_radiant_d, avg_radiant_d, max_radiant_d])
+    //             .attr("r", function(d){return d})
+    //         .enter()
+    //             .append("circle")
+    //             .attr("class", "distance")
+    //             .attr("cx", "0")
+    //             .attr("cy", grid_height)
+    //             .attr("fill", "blue")
+    //             .attr("opacity", "0.1")
+    //             .attr("r", function(d){return d})
+}
+
+function DistanceCircle(team, sort, val) {
+    this.team = team;
+    this.sort = sort;
+    this.val = val;
+}
+
+
+function drawLinks(tiles) {
     // Add or update links where possible (first so they are below)
-    links = d3.nest()
+    var links = d3.nest()
         .key(function(d) { return d.name; })
         .entries(tiles)
         .filter(function(d){ return d.values.length > 1; })
@@ -69,13 +148,15 @@ function updateGrid(tiles) {
             .attr("fill",  "none")
 
     grid.selectAll(".line").data(links).exit().remove();
+}
 
-    // Add players
+function drawPlayers(tiles) {
+     // Add players
     var players = tiles.filter(function(d) {
         return d.visible;
     })
 
-    grid.selectAll("circle").data(players) // Update existing elements
+    grid.selectAll(".player").data(players) // Update existing elements
         .attr("r", function(d) {
             return x.rangeBand()/2;
         })
@@ -90,6 +171,7 @@ function updateGrid(tiles) {
         })
     .enter() // Add new circles if necessary
         .append("circle")
+        .attr("class", "player")
         .attr("r", function(d) {
             return x.rangeBand()/2;
         })
@@ -104,7 +186,7 @@ function updateGrid(tiles) {
         })
 
     // Remove redundant circles
-    grid.selectAll("circle").data(players).exit().remove();
+    grid.selectAll(".player").data(players).exit().remove();
 
 }
 
@@ -117,6 +199,15 @@ function Tile(col, row, team, name, visible) {
 
     this.equals = function(other) {
         return this.row == other.row && this.col == other.col && this.name == other.name;
+    }
+
+    this.distanceToBase = function() {
+        return this.team == "radiant" ? distanceTo(0, grid_height, x(this.col), y(this.row)) : distanceTo(grid_width, 0, x(this.col), y(this.row));
+
+        function distanceTo(x1,y1,x2,y2) {
+            function sq(x){ return x*x }
+            return Math.sqrt( sq(x1-x2) + sq(y1-y2) );
+        }
     }
 }
 
