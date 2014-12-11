@@ -11,11 +11,7 @@
 				  <option value="{{match}}" {% if match == selected_match %}selected{% endif %}>{{match}}</option>
 				{% endfor %}
 			</select>
-			<select id="start_time">
-				{% for timepoint in timepoints %}
-				  <option value="{{timepoint}}" {% if timepoint == selected_timepoint %}selected{% endif %}>{{timepoint}}</option>
-				{% endfor %}
-			</select>
+			<input type="number" id="start_time" value="{{selected_timepoint}}" min="{{min_time}}" max="{{max_time}}" />
 			<input type="number" id="offset" value="0" />
 		</div>
 		<div id="svg_container">
@@ -38,7 +34,7 @@
 
         function getPlayerPositions() { 
 			var selected_match 				= parseInt(match_el.options[match_el.selectedIndex].value);
-			var selected_start_time 		= parseInt(start_time_el.options[start_time_el.selectedIndex].value);
+			var selected_start_time 		= parseInt(start_time_el.value);
 			var selected_offset				= parseInt(offset_el.value);
 
 			d3.json(baseurl + "locations/" + selected_match + "/" + selected_start_time + "/" + (selected_start_time+selected_offset), function (json) {
