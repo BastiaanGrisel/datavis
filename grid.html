@@ -16,11 +16,7 @@
 				  <option value="{{timepoint}}" {% if timepoint == selected_timepoint %}selected{% endif %}>{{timepoint}}</option>
 				{% endfor %}
 			</select>
-			<select id="end_time">
-				{% for timepoint in timepoints %}
-				  <option value="{{timepoint}}" {% if timepoint == selected_timepoint %}selected{% endif %}>{{timepoint}}</option>
-				{% endfor %}
-			</select>
+			<input type="number" id="offset" value="0" />
 		</div>
 		<div id="svg_container">
 		</div>
@@ -33,25 +29,31 @@
 
 		var match_el 		= document.getElementById('matches'),
 			start_time_el 	= document.getElementById('start_time'),
-			end_time_el		= document.getElementById('end_time');
+			offset_el		= document.getElementById('offset');
 
-		var match 		= match_el.options[match_el.selectedIndex].value,
-			start_time 	= start_time_el.options[start_time_el.selectedIndex].value;
-			end_time 	= end_time_el.options[end_time_el.selectedIndex].value;
+		getPlayerPositions();
 
-		d3.json(baseurl + "locations/" + match + "/" + start_time + "/" + end_time, function (json) {
-			tiles = [];
+        d3.select("#start_time").on("change", getPlayerPositions);	
+        d3.select("#offset").on("change", getPlayerPositions);	
 
-			json.forEach(function(player) {
-				tiles.push(new Tile(player.x, player.y, player.team))
-			});
-			
-			updateGrid(tiles);
-        });
+        function getPlayerPositions() { 
+			var selected_match 				= parseInt(match_el.options[match_el.selectedIndex].value);
+			var selected_start_time 		= parseInt(start_time_el.options[start_time_el.selectedIndex].value);
+			var selected_offset				= parseInt(offset_el.value);
 
-        // Check for changes in select boxes
+			d3.json(baseurl + "locations/" + selected_match + "/" + selected_start_time + "/" + (selected_start_time+selected_offset), function (json) {
+				tiles = [];
+				
+				json.forEach(function(player) {
+					tiles.push(new Tile(player.x, player.y, player.team))
+				});
+				
+				updateGrid(tiles);
+	        });
+		}
+
         d3.select("#matches").on("change", function(){ 
-			var selected_match = match_el.options[match_el.selectedIndex].value;
+			var selected_match = parseInt(match_el.options[match_el.selectedIndex].value);
 
 			d3.json(baseurl + "timepoints/" + selected_match, function (json) {
 				// Remove current times
@@ -65,26 +67,6 @@
 				});
 	        });
         });	
-
-        d3.select("#start_time").on("change", loadTiles);	
-        d3.select("#end_time").on("change", loadTiles);	
-
-        function loadTiles() { 
-			var selected_start_time 		= start_time_el.options[start_time_el.selectedIndex].value;
-			var selected_end_time 			= end_time_el.options[end_time_el.selectedIndex].value;
-
-			console.log(baseurl + "locations/" + match + "/" + selected_start_time + "/" + selected_end_time)
-
-			d3.json(baseurl + "locations/" + match + "/" + selected_start_time + "/" + selected_end_time, function (json) {
-				tiles = [];
-				
-				json.forEach(function(player) {
-					tiles.push(new Tile(player.x, player.y, player.team))
-				});
-				
-				updateGrid(tiles);
-	        });
-		}
 	</script>
 </body>
 </html>
