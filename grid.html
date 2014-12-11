@@ -55,20 +55,25 @@
 
 			d3.json(baseurl + "timepoints/" + selected_match, function (json) {
 				// Remove current times
-				while (time_el.firstChild) {
-				    time_el.removeChild(time_el.firstChild);
+				while (start_time_el.firstChild) {
+				    start_time_el.removeChild(start_time_el.firstChild);
 				}
 
 				json.forEach(function(timepoint) {
 					var option = new Option(timepoint, timepoint);
-					time_el.appendChild(option);
+					start_time_el.appendChild(option);
 				});
 	        });
         });	
 
-        d3.select("#time").on("change", function(){ 
+        d3.select("#start_time").on("change", loadTiles);	
+        d3.select("#end_time").on("change", loadTiles);	
+
+        function loadTiles() { 
 			var selected_start_time 		= start_time_el.options[start_time_el.selectedIndex].value;
 			var selected_end_time 			= end_time_el.options[end_time_el.selectedIndex].value;
+
+			console.log(baseurl + "locations/" + match + "/" + selected_start_time + "/" + selected_end_time)
 
 			d3.json(baseurl + "locations/" + match + "/" + selected_start_time + "/" + selected_end_time, function (json) {
 				tiles = [];
@@ -79,7 +84,7 @@
 				
 				updateGrid(tiles);
 	        });
-        });	
+		}
 	</script>
 </body>
 </html>
