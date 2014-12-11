@@ -45,7 +45,7 @@
 				tiles = [];
 				
 				json.forEach(function(player) {
-					tiles.push(new Tile(player.x, player.y, player.team))
+					tiles.push(new Tile(player.x, player.y, player.team, player.player))
 				});
 				
 				updateGrid(tiles);

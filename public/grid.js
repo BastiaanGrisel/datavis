@@ -35,7 +35,7 @@ var y = d3.scale.ordinal()
     .rangeBands([grid_height,0]);
 
 // Display data
-function updateGrid(tiles, connections) {
+function updateGrid(tiles) {
 
     grid.selectAll("circle").data(tiles) // Update existing elements
             .attr("r", function(d) {
@@ -67,12 +67,55 @@ function updateGrid(tiles, connections) {
 
     // Remove redundant circles
     grid.selectAll("circle").data(tiles).exit().remove();
+
+    // Add or update links where possible
+    links = d3.nest()
+        .key(function(d) { return d.name; })
+        .entries(tiles)
+        .filter(function(d){ return d.values.length > 1; })
+        .map(function(d){ 
+            var res = [];
+
+            for(i = 0; i < d.values.length - 1; i++){
+                res.push(new Link(d.values[i], d.values[i+1]));
+            } 
+
+            return res;
+        })
+        // Flatten the array
+        .reduce(function(a, b) {
+          return a.concat(b);
+        }, [])
+        // Remove links that link to themselves
+        .filter(function(d) {
+            return !d.from.equals(d.to);
+        })
+
+    var line = d3.svg.line()
+        .interpolate("basis")
+        .x(function(d){ return x(d.col); })
+        .y(function(d){ return y(d.row); });
+
+    grid.selectAll(".line")
+        .data(links)
+            .attr("d", line)
+        .enter()
+            .append("path")
+            .attr("class", "line")
+            .attr("d", line);
+
+    grid.selectAll(".line").data(links).exit().remove();
 }
 
-function Tile(col, row, team) {
+function Tile(col, row, team, name) {
 	this.row = row;
 	this.col = col;
     this.team = team;
+    this.name = name;
+
+    this.equals = function(other) {
+        return this.row == other.row && this.col == other.col && this.name == other.name;
+    }
 }
 
 // A link between two tiles
