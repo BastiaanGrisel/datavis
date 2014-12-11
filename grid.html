@@ -45,7 +45,7 @@
 				tiles = [];
 				
 				json.forEach(function(player) {
-					tiles.push(new Tile(player.x, player.y, player.team, player.player))
+					tiles.push(new Tile(player.x, player.y, player.team, player.player, player.tsync == selected_start_time))
 				});
 				
 				updateGrid(tiles);

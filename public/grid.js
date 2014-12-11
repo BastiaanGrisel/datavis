@@ -49,7 +49,7 @@ function updateGrid(tiles) {
         })
 
     var line = d3.svg.line()
-        .interpolate("linear")
+        .interpolate("basis")
         .x(function(d){ return x(d.col); })
         .y(function(d){ return y(d.row); });
 
@@ -57,19 +57,25 @@ function updateGrid(tiles) {
         .data(links)
             .attr("d", line)
         .enter()
-            .append("path")
+            .insert("path",":first-child")
+            // .append("path")
             .attr("class", "line")
             .attr("d", line)
             .attr("stroke", function(d, i) {
                 return color(i);
             })
+            .attr("stroke-dasharray", "5,5")
             .attr("stroke-width", 1)
             .attr("fill",  "none")
 
     grid.selectAll(".line").data(links).exit().remove();
 
     // Add players
-    grid.selectAll("circle").data(tiles) // Update existing elements
+    var players = tiles.filter(function(d) {
+        return d.visible;
+    })
+
+    grid.selectAll("circle").data(players) // Update existing elements
         .attr("r", function(d) {
             return x.rangeBand()/2;
         })
@@ -98,15 +104,16 @@ function updateGrid(tiles) {
         })
 
     // Remove redundant circles
-    grid.selectAll("circle").data(tiles).exit().remove();
+    grid.selectAll("circle").data(players).exit().remove();
 
 }
 
-function Tile(col, row, team, name) {
+function Tile(col, row, team, name, visible) {
 	this.row = row;
 	this.col = col;
     this.team = team;
     this.name = name;
+    this.visible = visible;
 
     this.equals = function(other) {
         return this.row == other.row && this.col == other.col && this.name == other.name;
