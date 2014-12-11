@@ -34,65 +34,22 @@ var y = d3.scale.ordinal()
     .domain(d3.range(size[1]))
     .rangeBands([grid_height,0]);
 
+var color = d3.scale.category10();
+
 // Display data
 function updateGrid(tiles) {
 
-    grid.selectAll("circle").data(tiles) // Update existing elements
-            .attr("r", function(d) {
-                return x.rangeBand()/2;
-            })
-            .attr("cx", function(d) {
-                return x(d.col);
-            })
-            .attr("cy", function(d) {
-                return y(d.row);
-            })
-            .attr("fill", function(d,i) {
-                return d.team == "radiant" ? "blue" : "red";
-            })
-        .enter() // Add new circles if necessary
-            .append("circle")
-            .attr("r", function(d) {
-                return x.rangeBand()/2;
-            })
-            .attr("cx", function(d) {
-                return x(d.col);
-            })
-            .attr("cy", function(d) {
-                return y(d.row);
-            })
-            .attr("fill", function(d,i) {
-                return d.team == "radiant" ? "blue" : "red";
-            })
-
-    // Remove redundant circles
-    grid.selectAll("circle").data(tiles).exit().remove();
-
-    // Add or update links where possible
+    // Add or update links where possible (first so they are below)
     links = d3.nest()
         .key(function(d) { return d.name; })
         .entries(tiles)
         .filter(function(d){ return d.values.length > 1; })
         .map(function(d){ 
-            var res = [];
-
-            for(i = 0; i < d.values.length - 1; i++){
-                res.push(new Link(d.values[i], d.values[i+1]));
-            } 
-
-            return res;
-        })
-        // Flatten the array
-        .reduce(function(a, b) {
-          return a.concat(b);
-        }, [])
-        // Remove links that link to themselves
-        .filter(function(d) {
-            return !d.from.equals(d.to);
+            return d.values
         })
 
     var line = d3.svg.line()
-        .interpolate("basis")
+        .interpolate("linear")
         .x(function(d){ return x(d.col); })
         .y(function(d){ return y(d.row); });
 
@@ -102,9 +59,47 @@ function updateGrid(tiles) {
         .enter()
             .append("path")
             .attr("class", "line")
-            .attr("d", line);
+            .attr("d", line)
+            .attr("stroke", function(d, i) {
+                return color(i);
+            })
+            .attr("stroke-width", 1)
+            .attr("fill",  "none")
 
     grid.selectAll(".line").data(links).exit().remove();
+
+    // Add players
+    grid.selectAll("circle").data(tiles) // Update existing elements
+        .attr("r", function(d) {
+            return x.rangeBand()/2;
+        })
+        .attr("cx", function(d) {
+            return x(d.col);
+        })
+        .attr("cy", function(d) {
+            return y(d.row);
+        })
+        .attr("fill", function(d,i) {
+            return d.team == "radiant" ? "blue" : "red";
+        })
+    .enter() // Add new circles if necessary
+        .append("circle")
+        .attr("r", function(d) {
+            return x.rangeBand()/2;
+        })
+        .attr("cx", function(d) {
+            return x(d.col);
+        })
+        .attr("cy", function(d) {
+            return y(d.row);
+        })
+        .attr("fill", function(d,i) {
+            return d.team == "radiant" ? "blue" : "red";
+        })
+
+    // Remove redundant circles
+    grid.selectAll("circle").data(tiles).exit().remove();
+
 }
 
 function Tile(col, row, team, name) {
