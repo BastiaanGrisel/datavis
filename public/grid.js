@@ -56,7 +56,7 @@ function updateGrid(tiles) {
 function drawDistances(tiles) {
     var teams = d3.nest()
         .key(function(d){ return d.team })
-        .entries(tiles);
+        .entries(tiles.filter(function(d){ return d.visible }));
 
     var circles = [];
 
