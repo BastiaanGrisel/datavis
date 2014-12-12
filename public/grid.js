@@ -60,38 +60,9 @@ function drawDistances(tiles) {
       return a.concat(b);
     });
 
-    var circles = distances.filter(function(d) { return d.sort != "min"; })
-    var masks   = distances.filter(function(d) { return d.sort == "min"; })
-
-    console.log(circles, masks)
-
-    //Define masks
-    grid_defs.selectAll(".mask")
-        .data(masks)
-            .attr("cx", function(d) {
-                return d.team == "radiant" ? grid_width : "0";
-            })
-            .attr("cy", function(d) {
-                return d.team == "radiant" ? "0" : grid_height;
-            })
-        .enter()
-            .append("mask")
-            .attr("class", "mask")
-            .attr("id", function(d) {
-                return d.team;
-            })
-            .append("circle")
-            .attr("cx", function(d) {
-                return d.team == "radiant" ? grid_width : "0";
-            })
-            .attr("cy", function(d) {
-                return d.team == "radiant" ? "0" : grid_height;
-            })
-            .attr("r", function(d){return d.val})
-
     // Draw circles
     grid.selectAll(".distance")
-        .data(circles)
+        .data(distances)
             .attr("r", function(d){return d.val})
         .enter()
             .append("circle")
@@ -102,10 +73,12 @@ function drawDistances(tiles) {
             .attr("cy", function(d) {
                 return d.team == "radiant" ? "0" : grid_height;
             })
-            .attr("fill", function(d){
+            .attr("stroke", function(d){
                 return d.team == "radiant" ? "blue" : "red";
             })
-            .attr("opacity", "0.1")
+            .attr("opacity", "0.5")
+            .attr("stroke-width", "2")
+            .attr("fill", "none")
             .attr("r", function(d){return d.val})
             .attr("mask", function(d) {
                 return "url(#"+d.team+")";
