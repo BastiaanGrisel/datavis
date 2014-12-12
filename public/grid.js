@@ -58,39 +58,61 @@ function drawDistances(tiles) {
         .key(function(d){ return d.team })
         .entries(tiles);
 
+    var circles = [];
+
+    function DistanceCircle(sort, team, val) {
+        this.sort = sort;
+        this.team = team;
+        this.val = val;
+    }
+
     teams.forEach(function(team){
-        team.min = d3.min(team.values, function(d){ return d.distanceToEnemyBase(); })
+        circles.push(new DistanceCircle(
+            "min", 
+            team.key,
+            d3.min(team.values, function(d){ return d.distanceToEnemyBase(); })
+            ))
+        circles.push(new DistanceCircle(
+            "mean", 
+            team.key,
+            d3.mean(team.values, function(d){ return d.distanceToEnemyBase(); })
+            ))
+        circles.push(new DistanceCircle(
+            "max", 
+            team.key,
+            d3.max(team.values, function(d){ return d.distanceToEnemyBase(); })
+            ))
     });
 
     grid.selectAll(".distance")
-        .data(teams)
-            .attr("r", function(d){return d.min})
-            .attr("cx", function(team) {
-                return team.key == "radiant" ? dire_base_px[0] : radiant_base_px[0];
+        .data(circles)
+            .attr("r", function(d){return d.val})
+            .attr("cx", function(d) {
+                return d.team == "radiant" ? dire_base_px[0] : radiant_base_px[0];
             })
-            .attr("cy", function(team) {
-                return team.key == "radiant" ? dire_base_px[1] : radiant_base_px[1];
+            .attr("cy", function(d) {
+                return d.team == "radiant" ? dire_base_px[1] : radiant_base_px[1];
             })
-            .attr("stroke", function(team){
-                return team.key == "radiant" ? "blue" : "red";
+            .attr("stroke", function(d){
+                return d.team == "radiant" ? "blue" : "red";
             })
         .enter()
             .append("circle")
             .attr("class", "distance")
-            .attr("cx", function(team) {
-                return team.key == "radiant" ? dire_base_px[0] : radiant_base_px[0];
+            .attr("cx", function(d) {
+                return d.team == "radiant" ? dire_base_px[0] : radiant_base_px[0];
             })
-            .attr("cy", function(team) {
-                return team.key == "radiant" ? dire_base_px[1] : radiant_base_px[1];
+            .attr("cy", function(d) {
+                return d.team == "radiant" ? dire_base_px[1] : radiant_base_px[1];
             })
-            .attr("stroke", function(team){
-                return team.key == "radiant" ? "blue" : "red";
+            .attr("stroke", function(d){
+                return d.team == "radiant" ? "blue" : "red";
             })
             .attr("opacity", "0.5")
             .attr("stroke-dasharray", "4,10")
             .attr("stroke-width", "2")
             .attr("fill", "none")
-            .attr("r", function(d){return d.min})
+            .attr("r", function(d){return d.val})
 }
 
 function DistanceCircle(team, sort, val) {
