@@ -2,7 +2,9 @@ var size = [128,128],
 	canvas_width  = document.getElementById("svg_container").clientWidth,
 	canvas_height = document.getElementById("svg_container").clientHeight,
 	grid_width    = canvas_width < canvas_height ? canvas_width : canvas_height,
-	grid_height   = grid_width;
+	grid_height   = grid_width,
+    radiant_base_px  = [0, grid_height],
+    dire_base_px = [grid_width, 0];
 
 // Create a D3 container
 var svg = d3.select("#svg_container").append("svg")
@@ -16,7 +18,7 @@ var grid = svg.append("g")
     .attr("height", grid_height)
     .attr("mask", "url(#grid_mask)")
     // Position the grid to the center of the page
-    .attr("transform","translate("+ Math.floor( (canvas_width - grid_width)/2 ) +","+ Math.floor( (canvas_height - grid_height)/2 ) +")")
+    // .attr("transform","translate("+ Math.floor( (canvas_width - grid_width)/2 ) +","+ Math.floor( (canvas_height - grid_height)/2 ) +")")
 
 var grid_defs = grid.append("defs").append("mask")
                     .attr("id", "grid_mask")
@@ -56,41 +58,39 @@ function drawDistances(tiles) {
         .key(function(d){ return d.team })
         .entries(tiles);
 
-    var distances = teams.map(function(d){
-        return [
-            new DistanceCircle(d.key, "min", d3.min(d.values, function(d){ return d.distanceToBase(); })),
-            new DistanceCircle(d.key, "mean", d3.mean(d.values, function(d){ return d.distanceToBase(); })),
-            new DistanceCircle(d.key, "max", d3.max(d.values, function(d){ return d.distanceToBase(); }))
-        ]
-    }).reduce(function(a, b) {
-      return a.concat(b);
-    }, []);
+    teams.forEach(function(team){
+        team.min = d3.min(team.values, function(d){ return d.distanceToEnemyBase(); })
+    });
 
-    console.log(distances)
-
-    // Draw circles
     grid.selectAll(".distance")
-        .data(distances)
-            .attr("r", function(d){return d.val})
+        .data(teams)
+            .attr("r", function(d){return d.min})
+            .attr("cx", function(team) {
+                return team.key == "radiant" ? dire_base_px[0] : radiant_base_px[0];
+            })
+            .attr("cy", function(team) {
+                return team.key == "radiant" ? dire_base_px[1] : radiant_base_px[1];
+            })
+            .attr("stroke", function(team){
+                return team.key == "radiant" ? "blue" : "red";
+            })
         .enter()
             .append("circle")
             .attr("class", "distance")
-            .attr("cx", function(d) {
-                return d.team == "radiant" ? grid_width : "0";
+            .attr("cx", function(team) {
+                return team.key == "radiant" ? dire_base_px[0] : radiant_base_px[0];
             })
-            .attr("cy", function(d) {
-                return d.team == "radiant" ? "0" : grid_height;
+            .attr("cy", function(team) {
+                return team.key == "radiant" ? dire_base_px[1] : radiant_base_px[1];
             })
-            .attr("stroke", function(d){
-                return d.team == "radiant" ? "blue" : "red";
+            .attr("stroke", function(team){
+                return team.key == "radiant" ? "blue" : "red";
             })
             .attr("opacity", "0.5")
+            .attr("stroke-dasharray", "4,10")
             .attr("stroke-width", "2")
             .attr("fill", "none")
-            .attr("r", function(d){return d.val})
-            .attr("mask", function(d) {
-                return "url(#"+d.team+")";
-            })
+            .attr("r", function(d){return d.min})
 }
 
 function DistanceCircle(team, sort, val) {
@@ -184,8 +184,9 @@ function Tile(col, row, team, name, visible) {
         return this.row == other.row && this.col == other.col && this.name == other.name;
     }
 
-    this.distanceToBase = function() {
-        return this.team == "radiant" ? distanceTo(grid_height, 0, x(this.col), y(this.row)) : distanceTo(0, grid_width, x(this.col), y(this.row));
+    this.distanceToEnemyBase = function() {
+        return this.team == "radiant" ? 
+            distanceTo(x(this.col), y(this.row), dire_base_px[0], dire_base_px[1]) : distanceTo(x(this.col), y(this.row), radiant_base_px[0], radiant_base_px[1]);
 
         function distanceTo(x1,y1,x2,y2) {
             function sq(x){ return x*x }
