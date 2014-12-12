@@ -1,0 +1,26 @@
+{
+  "name": "gamevis",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "dependencies": {
+    "mongojs": "^0.17.0",
+    "node-simple-router": "^0.9.4-2",
+    "swig": "^1.4.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BastiaanGrisel/datavis.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BastiaanGrisel/datavis/issues"
+  },
+  "homepage": "https://github.com/BastiaanGrisel/datavis"
+}
