@@ -31,21 +31,83 @@
 
         d3.select("#start_time").on("change", getPlayerPositions);	
         d3.select("#offset").on("change", getPlayerPositions);	
+		
+		/* Global variables */
+		var start_time					= {{min_time}};
+		var end_time 					= {{max_time}};
+		var all_players;
+		var red_team = [];
+		var blue_team = [];
 
         function getPlayerPositions() { 
 			var selected_match 				= parseInt(match_el.options[match_el.selectedIndex].value);
 			var selected_start_time 		= parseInt(start_time_el.value);
 			var selected_offset				= parseInt(offset_el.value);
-
+			
 			d3.json(baseurl + "locations/" + selected_match + "/" + selected_start_time + "/" + (selected_start_time+selected_offset), function (json) {
 				tiles = [];
-				
-				json.forEach(function(player) {
+				all_players = json;
+				red_team = [];
+				blue_team = [];
+				all_players.forEach(function(player) {
+					if(player.team == "radiant") {
+						red_team.push(player);
+					} else {
+						blue_team.push(player);
+					}
 					tiles.push(new Tile(player.x, player.y, player.team, player.player, player.tsync == selected_start_time))
 				});
-				
+				findPOI(25, 3); /* players and teams are global, range 25, more then 3 players */
+				dangerMeter(all_players[1]);
 				updateGrid(tiles);
 	        });
+		}
+		
+		function findPOI(radius, treshhold){
+			all_players.forEach(function(player){
+				if(getPlayersInRadius(all_players, player, radius) > treshhold) {
+					poi_player.push(player);
+				}					
+			});
+			return 0;
+		}
+		
+		function dangerMeter(player) {
+			if(include(red_team, player)) {
+				allies = red_team;
+				enemies = blue_team;
+			} else {
+				allies = blue_team;
+				enemies = red_team;
+			}
+			d_allies = 0;
+			d_enemies = 0;
+			allies.forEach(function(p) {
+				d_allies += playerDistance(player, p);
+			});
+			enemies.forEach(function(p) {
+				d_enemies += playerDistance(player, p);
+			});
+			danger = (1/(d_enemies - d_allies))
+			console.log("danger:"+danger);
+			return danger;
+		}
+		
+		function include(arr,obj) {
+			return (arr.indexOf(obj) != -1);
+		}
+		
+		function getPlayersInRadius(players, player, radius) {
+			num = 0;
+			players.forEach(function(p){
+				if (playerDistance(p,player) < radius) {
+					num++;
+				}
+			});
+		}
+		
+		function playerDistance(p1, p2){
+			return Math.sqrt(Math.pow(p1.y-p2.y,2)+Math.pow(p1.x-p2.x,2));
 		}
 
         d3.select("#matches").on("change", function(){ 
