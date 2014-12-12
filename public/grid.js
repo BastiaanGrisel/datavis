@@ -127,7 +127,7 @@ function drawLinks(tiles) {
                 return color(i);
             })
             .attr("stroke-dasharray", "5,5")
-            .attr("stroke-width", 1)
+            .attr("stroke-width", 2)
             .attr("fill",  "none")
 
     grid.selectAll(".line").data(links).exit().remove();
