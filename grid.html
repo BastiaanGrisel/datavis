@@ -52,15 +52,11 @@
 			var selected_match = parseInt(match_el.options[match_el.selectedIndex].value);
 
 			d3.json(baseurl + "timepoints/" + selected_match, function (json) {
-				// Remove current times
-				while (start_time_el.firstChild) {
-				    start_time_el.removeChild(start_time_el.firstChild);
-				}
+				start_time_el.value = d3.min(json);
+				start_time_el.min   = d3.min(json);
+				start_time_el.max   = d3.max(json);
 
-				json.forEach(function(timepoint) {
-					var option = new Option(timepoint, timepoint);
-					start_time_el.appendChild(option);
-				});
+				getPlayerPositions();
 	        });
         });	
 	</script>

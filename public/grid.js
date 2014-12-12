@@ -64,7 +64,7 @@ function drawDistances(tiles) {
         ]
     }).reduce(function(a, b) {
       return a.concat(b);
-    });
+    }, []);
 
     // Draw circles
     grid.selectAll(".distance")

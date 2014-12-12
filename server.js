@@ -20,6 +20,8 @@ router.get("/grid", function(request, response) {
 			var html = swig.renderFile("grid.html", {
 				selected_match: matches[0],
 				selected_timepoint: timepoints[0],
+				min_time: timepoints[0],
+				max_time: timepoints[timepoints.length-1],
 				matches: matches,
 				timepoints: timepoints
 			});
