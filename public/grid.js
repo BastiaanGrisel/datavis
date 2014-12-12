@@ -14,10 +14,16 @@ var grid = svg.append("g")
     .attr("class", "grid")
     .attr("width", grid_width)
     .attr("height", grid_height)
+    .attr("mask", "url(#grid_mask)")
     // Position the grid to the center of the page
     .attr("transform","translate("+ Math.floor( (canvas_width - grid_width)/2 ) +","+ Math.floor( (canvas_height - grid_height)/2 ) +")")
 
-var grid_defs = grid.append("defs"); 
+var grid_defs = grid.append("defs").append("mask")
+                    .attr("id", "grid_mask")
+                    .append("rect")
+                    .attr("fill", "white")
+                    .attr("height", grid_height)
+                    .attr("width", grid_width) 
 
 var image = grid.append("svg:image")
     .attr("xlink:href", "map.jpg")
