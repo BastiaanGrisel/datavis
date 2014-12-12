@@ -38,6 +38,7 @@
 		var all_players;
 		var red_team = [];
 		var blue_team = [];
+		var poi_player = [];
 
         function getPlayerPositions() { 
 			var selected_match 				= parseInt(match_el.options[match_el.selectedIndex].value);
@@ -50,25 +51,28 @@
 				red_team = [];
 				blue_team = [];
 				all_players.forEach(function(player) {
-					if(player.team == "radiant") {
+					if(player.team == "dire") {
 						red_team.push(player);
 					} else {
 						blue_team.push(player);
 					}
 					tiles.push(new Tile(player.x, player.y, player.team, player.player, player.tsync == selected_start_time))
 				});
-				findPOI(25, 3); /* players and teams are global, range 25, more then 3 players */
-				dangerMeter(all_players[1]);
+				findPOI(10, 2); /* players and teams are global, range 10, more then 3 players */
 				updateGrid(tiles);
 	        });
 		}
 		
 		function findPOI(radius, treshhold){
+			poi_player = [];
 			all_players.forEach(function(player){
-				if(getPlayersInRadius(all_players, player, radius) > treshhold) {
-					poi_player.push(player);
+				if(getPlayersInRadius(all_players, player, radius).length > treshhold) {
+					if (Math.abs(dangerMeter(player) > 5)) {
+						poi_player.push(player);
+					}
 				}					
 			});
+			console.log(poi_player);
 			return 0;
 		}
 		
@@ -83,14 +87,16 @@
 			d_allies = 0;
 			d_enemies = 0;
 			allies.forEach(function(p) {
-				d_allies += playerDistance(player, p);
+				d_allies += Math.min(playerDistance(player, p),10);
 			});
 			enemies.forEach(function(p) {
-				d_enemies += playerDistance(player, p);
+				d_enemies += Math.min(playerDistance(player, p),10);
 			});
-			danger = (1/(d_enemies - d_allies))
-			console.log("danger:"+danger);
-			return danger;
+			return danger(d_allies, d_enemies);
+		}
+		
+		function danger(dallies, denemies) {
+			return (1/(Math.log(d_enemies) - Math.log(d_allies))); /*Close enemies increase the danger, close allies reduce danger. Log for scaling. */
 		}
 		
 		function include(arr,obj) {
@@ -98,12 +104,13 @@
 		}
 		
 		function getPlayersInRadius(players, player, radius) {
-			num = 0;
+			inRadius = [];
 			players.forEach(function(p){
 				if (playerDistance(p,player) < radius) {
-					num++;
+					inRadius.push(p)
 				}
 			});
+			return inRadius;
 		}
 		
 		function playerDistance(p1, p2){
