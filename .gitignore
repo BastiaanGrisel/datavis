@@ -1,2 +1,5 @@
 data/*
 node_modules/*
+db/*
+mongodb.bat
+npm-debug.log
