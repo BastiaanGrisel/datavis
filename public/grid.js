@@ -48,7 +48,7 @@ var color = d3.scale.category10();
 function updateGrid(tiles) {
     drawPlayers(tiles);
     drawLinks(tiles);
-    drawDistances(tiles);
+    // drawDistances(tiles);
 }
 
 function drawDistances(tiles) {
@@ -65,6 +65,8 @@ function drawDistances(tiles) {
     }).reduce(function(a, b) {
       return a.concat(b);
     }, []);
+
+    console.log(distances)
 
     // Draw circles
     grid.selectAll(".distance")
