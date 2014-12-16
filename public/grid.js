@@ -89,7 +89,8 @@ function drawDistances(tiles) {
     });
 
    var masks = grid_defs.selectAll(".distance_mask")
-        .data(d3.nest().key(function(d){ return d.team; }).entries(circles))
+
+    masks.data(d3.nest().key(function(d){ return d.team; }).entries(circles))
             .attr("id", function(d) {
                 return d.key;
             })
@@ -100,11 +101,9 @@ function drawDistances(tiles) {
                 return d.key;
             });
 
-            console.log(d3.nest().key(function(d){ return d.team; }).entries(circles)[0].values[0].val)
-
     masks.selectAll("circle")
         .data(function(d){ return d.values; })
-            .attr("r", function(d){return d.val})
+            .attr("r", function(d){ return d.val })
             .attr("cx", function(d) {
                 return d.team == "radiant" ? dire_base_px[0] : radiant_base_px[0];
             })
