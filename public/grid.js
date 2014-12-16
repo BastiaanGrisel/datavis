@@ -136,10 +136,8 @@ function drawDistances(tiles) {
             .attr("cy", function(d) {
                 return d.team == "radiant" ? dire_base_px[1] : radiant_base_px[1];
             })
-            // .attr("stroke", function(d){
-            //     return d.team == "radiant" ? "blue" : "red";
-            // })
-            // .attr("fill", "blue")
+            .attr("fill-opacity", "0.08")
+            .attr("stroke-opacity", "0.25")
         .enter()
             .append("circle")
             .attr("class", "distance")
@@ -154,17 +152,11 @@ function drawDistances(tiles) {
                     return "none"
                 return d.team == "radiant" ? "blue" : "red";
             })
-            .attr("opacity", function(d) {
-                if(d.sort == "mean") return "0.2"
-                return "0.08"
-            })
             .attr("mask", function(d){
                 return d.team == "radiant" ? "url(#radiant)" : "url(#dire)";
             })
-            // .attr("stroke-dasharray", "4,10")
-            .attr("stroke-width", "3")
+            .attr("stroke-width", "2")
             .attr("stroke", function(d) {
-                if(d.sort != "mean") return "none"
                 return d.team == "radiant" ? "blue" : "red"; 
             })
             .attr("r", function(d){return d.val})
