@@ -150,15 +150,23 @@ function drawDistances(tiles) {
                 return d.team == "radiant" ? dire_base_px[1] : radiant_base_px[1];
             })
             .attr("fill", function(d){
+                if(d.sort != "max") 
+                    return "none"
                 return d.team == "radiant" ? "blue" : "red";
             })
-            .attr("opacity", "0.1")
+            .attr("opacity", function(d) {
+                if(d.sort == "mean") return "0.2"
+                return "0.08"
+            })
             .attr("mask", function(d){
                 return d.team == "radiant" ? "url(#radiant)" : "url(#dire)";
             })
             // .attr("stroke-dasharray", "4,10")
-            // .attr("stroke-width", "2")
-            // .attr("fill", "blue")
+            .attr("stroke-width", "3")
+            .attr("stroke", function(d) {
+                if(d.sort != "mean") return "none"
+                return d.team == "radiant" ? "blue" : "red"; 
+            })
             .attr("r", function(d){return d.val})
 }
 
