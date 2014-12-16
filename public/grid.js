@@ -20,12 +20,14 @@ var grid = svg.append("g")
     // Position the grid to the center of the page
     // .attr("transform","translate("+ Math.floor( (canvas_width - grid_width)/2 ) +","+ Math.floor( (canvas_height - grid_height)/2 ) +")")
 
-var grid_defs = grid.append("defs").append("mask")
-                    .attr("id", "grid_mask")
-                    .append("rect")
-                    .attr("fill", "white")
-                    .attr("height", grid_height)
-                    .attr("width", grid_width) 
+var grid_defs = grid.append("defs")
+
+grid_defs.append("mask")
+    .attr("id", "grid_mask")
+    .append("rect")
+    .attr("fill", "white")
+    .attr("height", grid_height)
+    .attr("width", grid_width) 
 
 var image = grid.append("svg:image")
     .attr("xlink:href", "map.jpg")
@@ -50,7 +52,7 @@ var color = d3.scale.category10();
 function updateGrid(tiles) {
     drawPlayers(tiles);
     drawLinks(tiles);
-    // drawDistances(tiles);
+    drawDistances(tiles);
 }
 
 function drawDistances(tiles) {
@@ -68,22 +70,64 @@ function drawDistances(tiles) {
 
     teams.forEach(function(team){
         circles.push(new DistanceCircle(
-            "min", 
+            "max", 
             team.key,
-            d3.min(team.values, function(d){ return d.distanceToEnemyBase(); })
+            d3.max(team.values, function(d){ return d.distanceToEnemyBase(); })
             ))
+        
         circles.push(new DistanceCircle(
             "mean", 
             team.key,
             d3.mean(team.values, function(d){ return d.distanceToEnemyBase(); })
             ))
+        
         circles.push(new DistanceCircle(
-            "max", 
+            "min", 
             team.key,
-            d3.max(team.values, function(d){ return d.distanceToEnemyBase(); })
+            d3.min(team.values, function(d){ return d.distanceToEnemyBase(); })
             ))
     });
 
+   var masks = grid_defs.selectAll(".distance_mask")
+        .data(d3.nest().key(function(d){ return d.team; }).entries(circles))
+            .attr("id", function(d) {
+                return d.key;
+            })
+        .enter()
+            .append("mask")
+            .attr("class", "distance_mask")
+            .attr("id", function(d) {
+                return d.key;
+            });
+
+            console.log(d3.nest().key(function(d){ return d.team; }).entries(circles)[0].values[0].val)
+
+    masks.selectAll("circle")
+        .data(function(d){ return d.values; })
+            .attr("r", function(d){return d.val})
+            .attr("cx", function(d) {
+                return d.team == "radiant" ? dire_base_px[0] : radiant_base_px[0];
+            })
+            .attr("cy", function(d) {
+                return d.team == "radiant" ? dire_base_px[1] : radiant_base_px[1];
+            })
+            .attr("fill", function(d) {
+                return d.sort == "min" ? "black" : "white"; 
+            })  
+        .enter()
+            .append("circle")
+            .attr("r", function(d){return d.val})
+            .attr("cx", function(d) {
+                return d.team == "radiant" ? dire_base_px[0] : radiant_base_px[0];
+            })
+            .attr("cy", function(d) {
+                return d.team == "radiant" ? dire_base_px[1] : radiant_base_px[1];
+            })
+            .attr("fill", function(d) { 
+                return d.sort == "min" ? "black" : "white"; 
+            })  
+
+    // Draw circles
     grid.selectAll(".distance")
         .data(circles)
             .attr("r", function(d){return d.val})
@@ -93,9 +137,10 @@ function drawDistances(tiles) {
             .attr("cy", function(d) {
                 return d.team == "radiant" ? dire_base_px[1] : radiant_base_px[1];
             })
-            .attr("stroke", function(d){
-                return d.team == "radiant" ? "blue" : "red";
-            })
+            // .attr("stroke", function(d){
+            //     return d.team == "radiant" ? "blue" : "red";
+            // })
+            // .attr("fill", "blue")
         .enter()
             .append("circle")
             .attr("class", "distance")
@@ -105,22 +150,18 @@ function drawDistances(tiles) {
             .attr("cy", function(d) {
                 return d.team == "radiant" ? dire_base_px[1] : radiant_base_px[1];
             })
-            .attr("stroke", function(d){
+            .attr("fill", function(d){
                 return d.team == "radiant" ? "blue" : "red";
             })
-            .attr("opacity", "0.5")
-            .attr("stroke-dasharray", "4,10")
-            .attr("stroke-width", "2")
-            .attr("fill", "none")
+            .attr("opacity", "0.1")
+            .attr("mask", function(d){
+                return d.team == "radiant" ? "url(#radiant)" : "url(#dire)";
+            })
+            // .attr("stroke-dasharray", "4,10")
+            // .attr("stroke-width", "2")
+            // .attr("fill", "blue")
             .attr("r", function(d){return d.val})
 }
-
-function DistanceCircle(team, sort, val) {
-    this.team = team;
-    this.sort = sort;
-    this.val = val;
-}
-
 
 function drawLinks(tiles) {
     // Add or update links where possible (first so they are below)
