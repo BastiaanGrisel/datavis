@@ -62,7 +62,7 @@ router.get("/timepoints/:match", function(request, response) {
 router.get("/distances/:match", function(request, response) {
 	var match = request.params.match;
 
-	getDistances(match, function(err, records) {
+	getDistancesToEnemyTeam(match, function(err, records) {
 		if(err) response.writeHead(500);
 
 		response.writeHead(200, {"Content-Type": "text/json", "Access-Control-Allow-Origin": "*"});
@@ -71,7 +71,7 @@ router.get("/distances/:match", function(request, response) {
 	});
 })
 
-function getDistances(match, callback) {
+function getDistancesToEnemyTeam(match, callback) {
 	var radiant_base = [0, 128];
 	var dire_base 	 = [128, 0];
 
