@@ -59,6 +59,47 @@ router.get("/timepoints/:match", function(request, response) {
 	});
 });
 
+router.get("/distances/:match", function(request, response) {
+	var match = request.params.match;
+
+	getDistances(match, function(err, records) {
+		if(err) response.writeHead(500);
+
+		response.writeHead(200, {"Content-Type": "text/json", "Access-Control-Allow-Origin": "*"});
+		response.write(JSON.stringify(records));
+		response.end();
+	});
+})
+
+function getDistances(match, callback) {
+	var radiant_base = [0, 128];
+	var dire_base 	 = [128, 0];
+
+	// Get all locations for all timepoints
+	var locations = getLocations(match, function(err, records) {
+		//For each timepoint, compute the distance to the enemy base
+		var res = records.map(function(player) {
+			var name = player.player;
+
+			if(player.team == "radiant")
+				return {name: distanceTo(player.x, player.y, radiant_base[0], radiant_base[1])};
+			else 
+				return {name: distanceTo(player.x, player.y, dire_base[0], dire_base[1])};
+		});
+
+		callback(err, res);
+	});
+}
+
+function distanceTo(x1,y1,x2,y2) {
+    function sq(x){ return x*x }
+    return Math.sqrt( sq(x1-x2) + sq(y1-y2) );
+}
+
+function getLocations(match, callback) {
+	db.locations.find({'match': match}, callback);
+}
+
 function getLocations(match, start_time, callback) {
 	getLocations(match, start_time, start_time, callback);
 }
@@ -71,8 +112,6 @@ function getLocations(match, start, end, callback) {
 
 	for(t = start_time; t <= end_time; t++)
 		timepoints.push(t)
-
-	console.log(start_time, end_time, timepoints)
 
 	db.locations.find({'match': match, $or: timepoints.map(function(t) { return {'tsync': t}; }) }, callback);
 }
