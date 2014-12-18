@@ -44,8 +44,8 @@ function drawLinks() {
 
     var line = d3.svg.line()
         .interpolate("basis")
-        .x(function(d){ return x(d.x); })
-        .y(function(d){ return y(d.y); });
+        .x(function(d){ return grid.x(d.x); })
+        .y(function(d){ return grid.y(d.y); });
 
     grid.selectAll(".line")
         .data(links)
