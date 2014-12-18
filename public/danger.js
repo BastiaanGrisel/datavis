@@ -1,4 +1,4 @@
-danger_threshold = 0.4;
+danger_threshold = (4.5/5)*Math.sqrt(0.4);
 
 function drawPOI(radius, treshhold){
 	poi = [];
@@ -11,7 +11,7 @@ function drawPOI(radius, treshhold){
 		battle = getPlayersInRadius(players_all, player, radius);
 		if(battle.length > treshhold) {
 			//console.log(dangerMeter(player,radius));
-			if (dangerMeter(player,radius) > (4.5/5)*Math.sqrt(danger_threshold)) { /* 1 additional player closer then 40% of the radius */
+			if (dangerMeter(player,radius) > danger_threshold) { /* 1 additional player closer then 40% of the radius */
 				if (!(include(poi_player,player))) {
 					poi_player.push(player);
 				}
