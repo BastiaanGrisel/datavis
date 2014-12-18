@@ -8,7 +8,7 @@ var http 	= require("http"),
 
 
 // Serve grid 
-router.get("/grid", function(request, response) {
+router.get("/", function(request, response) {
 	response.writeHead(200, {"Content-Type": "text/html"});
 
 	getMatches(function onMatches(err, records) {
