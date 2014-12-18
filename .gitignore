@@ -3,3 +3,8 @@ node_modules/*
 db/*
 mongodb.bat
 npm-debug.log
+
+*.aux
+*.log
+*.out
+*.synctex.gz
