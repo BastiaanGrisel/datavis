@@ -6,13 +6,23 @@
 <body>
 	<div class="flex_column">
 		<div id="control_container">
+			<input id="pause" type="button" value="Pause">
+			<input id="play" type="button" value="Play"/>
+			<input id="play2" type="button" value="Play(2x)"/>
+			<input id="play10" type="button" value="Play(10x)"/>
+			<font color="white">
+			Match:
+			</font>
 			<select id="matches">
 				{% for match in matches %}
 				  <option value="{{match}}" {% if match == selected_match %}selected{% endif %}>{{match}}</option>
 				{% endfor %}
 			</select>
+			<font color="white">
+			Timeframe:
+			</font>
 			<input type="number" id="start_time" value="{{selected_timepoint}}" min="{{min_time}}" max="{{max_time}}" />
-			<input type="number" id="offset" value="0" />
+			<!--<input type="number" id="offset" value="0" />-->
 		</div>
 		<div id="svg_container">
 		</div>
@@ -22,7 +32,8 @@
 		baseurl 	  = "http://datavis.vikko.nl/";
 		canvas_width  = document.getElementById("svg_container").clientWidth;
 		canvas_height = document.getElementById("svg_container").clientHeight;
-
+		timer = null;
+		delay = null;
 		players_dire 	= []; //dire red
 		players_radiant = []; //radiant blue
 		players_all 	= [];
@@ -46,12 +57,35 @@
 
 	<script>
 		// Init code
+		
+		// Timer handlers
+		d3.select("#pause").on("click",stopTimer);
+		d3.select("#play").on("click",function(e){startTimer(1000, 0);});
+		d3.select("#play2").on("click",function(e){startTimer(500, 0);});
+		d3.select("#play8").on("click",function(e){startTimer(250, 1);});
+		
 		onChangeTime();
+		startTimer(1000, 0);
 
 		// Event handlers
 		d3.select("#matches").on("change", onChangeMatch);
 		d3.select("#start_time").on("change", onChangeTime);	
-        d3.select("#offset").on("change", onChangeTime);	
+        d3.select("#offset").on("change", onChangeTime);		
+		function startTimer(d, skip) {
+			stopTimer();
+			delay = d;
+			timer = setInterval(function(){raise_time(skip);}, d);
+		}
+		
+		function stopTimer() {
+			clearTimeout(timer);
+		}
+		
+		function raise_time(skip) {
+			el = d3.select("#start_time");
+			el.attr("value",parseInt(el.attr("value"))+skip+1);
+			onChangeTime();
+		}
 
 		function onChangeMatch() {
 			// Populate Timepoints and player positions
@@ -88,7 +122,7 @@
 		}
 
 		function getSelectedOffset() {
-			return parseInt(document.getElementById('offset').value);
+			return -10;//parseInt(document.getElementById('offset').value);
 		}
 	</script>
 </body>
