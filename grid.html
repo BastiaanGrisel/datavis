@@ -22,6 +22,11 @@
 		baseurl 	  = "http://localhost/";
 		canvas_width  = document.getElementById("svg_container").clientWidth;
 		canvas_height = document.getElementById("svg_container").clientHeight;
+
+		red_team = [];  //dire
+		blue_team = []; //radiant
+		all_players = [];
+
 	</script>
 
 	<script src="grid.js" type="text/javascript"></script>
@@ -34,69 +39,50 @@
 	<script src="distancegraph.js" type="text/javascript"></script>
 
 	<script>
+		// Initialisation code
+
 		// Event handlers
-		var match_el 		= document.getElementById('matches'),
-			start_time_el 	= document.getElementById('start_time'),
-			offset_el		= document.getElementById('offset');
+		d3.select("#matches").on("change", onChangeMatch);
+		d3.select("#start_time").on("change", onChangeTime);	
+        d3.select("#offset").on("change", onChangeTime);	
 
-		onMatchChanged();
+		function onChangeMatch() {
+			// Populate Timepoints and player positions
+			// d3.json(baseurl + "timepoints/" + selected_match, function (json) {
+			// 	getPlayerPositions();
+	  //       });
 
-        d3.select("#start_time").on("change", getPlayerPositions);	
-        d3.select("#offset").on("change", getPlayerPositions);	
-		d3.select("#matches").on("change", onMatchChanged);
-
-        function onMatchChanged(){ 
-			var selected_match = parseInt(match_el.options[match_el.selectedIndex].value);
-
-			d3.json(baseurl + "timepoints/" + selected_match, function (json) {
-				start_time_el.value = d3.min(json);
-				start_time_el.min   = d3.min(json);
-				start_time_el.max   = d3.max(json);
-
-				getPlayerPositions();
-	        });
-
-	        d3.json(baseurl + "distances/" + selected_match, function (json) {
-				drawDistanceGraph(json);
-	        });
-        }
-
-        // Populate views
-		var all_players;
-		var red_team = [];
-		var blue_team = [];
-		var poi_player = [];
-
-        function getPlayerPositions() { 
-			var selected_match 				= parseInt(match_el.options[match_el.selectedIndex].value);
-			var selected_start_time 		= parseInt(start_time_el.value);
-			var selected_offset				= parseInt(offset_el.value);
-			
-			d3.json(baseurl + "locations/" + selected_match + "/" + selected_start_time + "/" + (selected_start_time+selected_offset), function (json) {
-				tiles = [];
-				all_players = [];
-				red_team = [];
-				blue_team = [];
-				json.forEach(function(player) {
-					if (player.tsync == selected_start_time) { /* Only select current timestamp */
-						all_players.push(player);
-						if(player.team == "dire") {
-							if (!(include(red_team,player))) {
-								red_team.push(player);
-							}
-						} else {
-							if (!(include(blue_team,player))) {
-								blue_team.push(player);
-							}
-						}
-					}
-					tiles.push(new Tile(player.x, player.y, player.team, player.player, player.tsync == selected_start_time))
-				});
-				findPOI(25, 2); /* players and teams are global, range 10, more then 3 players */
-				updateGrid(tiles);
-	        });
+	  //       // Draw distance graph
+	  //       d3.json(baseurl + "distances/" + selected_match, function (json) {
+			// 	drawDistanceGraph(json);
+	  //       });
 		}
 
+		function onChangeTime() {
+			d3.json(baseurl + "locations/" + getSelectedMatch() + "/" + getSelectedTime() + "/" + (getSelectedTime()+getSelectedOffset()), function (json) {
+
+				all_players = json.filter(function(player) { return player.tsync == getSelectedTime(); });
+				red_team 	= all_players.filter(function(player) { return player.team == "dire"; })
+				blue_team 	= all_players.filter(function(player) { return player.team == "radiant"; })
+
+				// findPOI(25, 2);  players and teams are global, range 10, more then 3 players 
+				// updateGrid(tiles);
+			})
+		}
+
+		// Utility functions
+		function getSelectedMatch() {
+			var match_el 		= document.getElementById('matches');
+			return parseInt(match_el.options[match_el.selectedIndex].value);
+		}
+
+		function getSelectedTime() {
+			return document.getElementById('start_time').value;
+		}
+
+		function getSelectedOffset() {
+			return document.getElementById('offset').value;
+		}
 	</script>
 </body>
 </html>
