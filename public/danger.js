@@ -1,7 +1,8 @@
-function findPOI(radius, treshhold){
+function drawPOI(radius, treshhold){
+	poi = [];
 	poi_player = [];
-	all_players.forEach(function(player){
-		battle = getPlayersInRadius(all_players, player, radius);
+	players_all.forEach(function(player){
+		battle = getPlayersInRadius(players_all, player, radius);
 		if(battle.length > treshhold) {
 			//console.log(dangerMeter(player,radius));
 			if (dangerMeter(player,radius) > (4.5/5)*Math.sqrt(0.4)) { /* 1 additional player closer then 40% of the radius */
@@ -11,16 +12,34 @@ function findPOI(radius, treshhold){
 			}
 		}					
 	});
+
 	if(poi_player.length > 0) {
-		console.log("Danger on players:");
-		console.log(poi_player);
-		poi = [];
 		poi_player.forEach(function(p) {
 			poi.push([p.x, p.y, p.team]);
 		});
 		poi = cluster(poi, radius);
 	}
-	return 0;
+	
+	grid.selectAll(".poi")
+		.data(poi)
+			.attr("cx", function(d){ return x(d[0]); })
+			.attr("cy", function(d){ return y(d[1]); })
+			.attr("r", x(radius))
+			.attr("fill", function(d){ return d[2] == "radiant" ? "blue" : "red" })
+			.attr("stroke", function(d){ return d[2] == "radiant" ? "blue" : "red" })
+		.enter()
+			.append("circle")
+			.attr("class", "poi")
+			.attr("cx", function(d){ return x(d[0]); })
+			.attr("cy", function(d){ return y(d[1]); })
+			.attr("r", x(radius))
+			.attr("fill", function(d){ return d[2] == "radiant" ? "blue" : "red" })
+			.attr("stroke", function(d){ return d[2] == "radiant" ? "blue" : "red" })
+			.attr("fill-opacity", "0.1")
+			.attr("stroke-opacity", "0.8")
+			.attr("stroke-width", 1)
+
+	grid.selectAll(".poi").data(poi).exit().remove();
 }
 
 function cluster(poi, radius) {
@@ -56,12 +75,12 @@ function cluster(poi, radius) {
 }
 
 function dangerMeter(player,radius) {
-	if(include(red_team, player)) {
-		allies = red_team;
-		enemies = blue_team;
+	if(include(players_dire, player)) {
+		allies = players_dire;
+		enemies = players_radiant;
 	} else {
-		allies = blue_team;
-		enemies = red_team;
+		allies = players_radiant;
+		enemies = players_dire;
 	}
 	d_allies = 0;
 	d_enemies = 0;
