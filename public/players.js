@@ -4,10 +4,10 @@ function drawPlayers() {
             return x.rangeBand()/2;
         })
         .attr("cx", function(d) {
-            return x(d.col);
+            return x(d.x);
         })
         .attr("cy", function(d) {
-            return y(d.row);
+            return y(d.y);
         })
         .attr("fill", function(d,i) {
             return d.team == "poi" ? "green" : (d.team == "radiant" ? "blue" : "red");
@@ -19,10 +19,10 @@ function drawPlayers() {
             return x.rangeBand()/2;
         })
         .attr("cx", function(d) {
-            return x(d.col);
+            return x(d.x);
         })
         .attr("cy", function(d) {
-            return y(d.row);
+            return y(d.y);
         })
         .attr("fill", function(d,i) {
             return d.team == "radiant" ? "blue" : "red";
@@ -32,11 +32,11 @@ function drawPlayers() {
     grid.selectAll(".player").data(players_all).exit().remove();
 }
 
-function drawLinks(tiles) {
+function drawLinks() {
     // Add or update links where possible (first so they are below)
     var links = d3.nest()
-        .key(function(d) { return d.name; })
-        .entries(tiles)
+        .key(function(d) { return d.player; })
+        .entries(match_info)
         .filter(function(d){ return d.values.length > 1; })
         .map(function(d){ 
             return d.values
@@ -44,8 +44,8 @@ function drawLinks(tiles) {
 
     var line = d3.svg.line()
         .interpolate("basis")
-        .x(function(d){ return x(d.col); })
-        .y(function(d){ return y(d.row); });
+        .x(function(d){ return x(d.x); })
+        .y(function(d){ return y(d.y); });
 
     grid.selectAll(".line")
         .data(links)

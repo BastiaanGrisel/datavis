@@ -48,8 +48,8 @@ var y = d3.scale.ordinal()
 var color = d3.scale.category10();
 
 // Display data on grid
-function updateGrid(match_info) {
+function updateGrid() {
     drawPlayers();
-    // drawLinks(match_info);
+    drawLinks();
     // drawDistances(tiles);
 }

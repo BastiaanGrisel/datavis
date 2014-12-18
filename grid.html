@@ -55,7 +55,7 @@
 	        });
 
 	        // Update the grid
-	        changeTime();
+	        onChangeTime();
 		}
 
 		function onChangeTime() {
@@ -73,16 +73,16 @@
 
 		// Utility functions
 		function getSelectedMatch() {
-			var match_el 		= document.getElementById('matches');
+			var match_el = document.getElementById('matches');
 			return parseInt(match_el.options[match_el.selectedIndex].value);
 		}
 
 		function getSelectedTime() {
-			return document.getElementById('start_time').value;
+			return parseInt(document.getElementById('start_time').value);
 		}
 
 		function getSelectedOffset() {
-			return document.getElementById('offset').value;
+			return parseInt(document.getElementById('offset').value);
 		}
 	</script>
 </body>
