@@ -212,7 +212,7 @@ function drawPlayers(tiles) {
             return y(d.row);
         })
         .attr("fill", function(d,i) {
-            return d.team == "radiant" ? "blue" : "red";
+            return d.team == "poi" ? "green" : (d.team == "radiant" ? "blue" : "red");
         })
     .enter() // Add new circles if necessary
         .append("circle")
