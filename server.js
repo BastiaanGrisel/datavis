@@ -109,4 +109,4 @@ function getTimepoints(match, callback) {
 	db.locations.distinct('tsync', { 'match': match }, callback);
 }
 
-server.listen(80);
+server.listen(3000);
