@@ -61,43 +61,26 @@ router.get("/timepoints/:match", function(request, response) {
 
 router.get("/distances/:match", function(request, response) {
 	var match = request.params.match;
+	var radiant_base = [0, 128];
+	var dire_base 	 = [128, 0];
 
-	getDistancesToEnemyTeam(match, function(err, records) {
+	db.locations.find({'match': parseInt(match)}, {'x':1, 'y':1, 'player':1, 'tsync': 1}).sort({'tsync':1}).map(function(player) {
+		if(player.team == "radiant")
+			return {'name': player.player, 'time': player.tsync, 'distance': distanceTo(player.x, player.y, radiant_base[0], radiant_base[1])};
+		else 
+			return {'name': player.player, 'time': player.tsync, 'distance': distanceTo(player.x, player.y, dire_base[0], dire_base[1])};
+	}, function(err, records) {
 		if(err) response.writeHead(500);
 
 		response.writeHead(200, {"Content-Type": "text/json", "Access-Control-Allow-Origin": "*"});
 		response.write(JSON.stringify(records));
 		response.end();
-	});
+	})
 })
-
-function getDistancesToEnemyTeam(match, callback) {
-	var radiant_base = [0, 128];
-	var dire_base 	 = [128, 0];
-
-	// Get all locations for all timepoints
-	var locations = getLocations(match, function(err, records) {
-		//For each timepoint, compute the distance to the enemy base
-		var res = records.map(function(player) {
-			var name = player.player;
-
-			if(player.team == "radiant")
-				return {name: distanceTo(player.x, player.y, radiant_base[0], radiant_base[1])};
-			else 
-				return {name: distanceTo(player.x, player.y, dire_base[0], dire_base[1])};
-		});
-
-		callback(err, res);
-	});
-}
 
 function distanceTo(x1,y1,x2,y2) {
     function sq(x){ return x*x }
     return Math.sqrt( sq(x1-x2) + sq(y1-y2) );
-}
-
-function getLocations(match, callback) {
-	db.locations.find({'match': match}, callback);
 }
 
 function getLocations(match, start_time, callback) {
