@@ -49,23 +49,47 @@ function drawDangerGraph() {
 
 	var bar = danger_meter.selectAll("rect")
 		.data(player_danger)
-			.attr("transform", function(d) {
-				return "translate("+ danger_meter.x(d.player) +",0)";
+			.attr("height", function(d){ 
+				if(d.danger > 0) {
+					return danger_meter_height/2 - danger_meter.y(d.danger); 
+				} else {
+					return danger_meter.y(d.danger) - danger_meter_height/2;
+				}
 			})
-			.attr("y", 0)
-	     	.attr("height", function(d) { return Math.abs(danger_meter.y(d.danger)) })
 	     	.attr("width", danger_meter.x.rangeBand())
+			.attr("x", function(d) {
+				return danger_meter.x(d.player);
+			})
+			.attr("y", function(d) { 
+				if(d.danger > 0) {
+					return danger_meter.y(d.danger);
+				} else {
+					return danger_meter_height/2;
+				}
+			})
 	     	.attr("fill", function(d) {
 	     		return d.team == "radiant" ? "blue" : "red";
 	     	})
 		.enter()
 			.append("rect")
-			.attr("transform", function(d) {
-				return "translate("+ danger_meter.x(d.player) +",0)";
+			.attr("height", function(d){ 
+				if(d.danger > 0) {
+					return danger_meter_height/2 - danger_meter.y(d.danger); 
+				} else {
+					return danger_meter.y(d.danger) - danger_meter_height/2;
+				}
 			})
-			.attr("y", 0)
-	     	.attr("height", function(d) { return danger_meter_height - danger_meter.y(d.danger); })
 	     	.attr("width", danger_meter.x.rangeBand())
+			.attr("x", function(d) {
+				return danger_meter.x(d.player);
+			})
+			.attr("y", function(d) { 
+				if(d.danger > 0) {
+					return danger_meter.y(d.danger);
+				} else {
+					return danger_meter_height/2;
+				}
+			})
 	     	.attr("fill", function(d) {
 	     		return d.team == "radiant" ? "blue" : "red";
 	     	})
