@@ -8,7 +8,6 @@ danger_meter = svg.append("g")
 			    .attr("height", danger_meter_height)
 			    .attr("transform", "translate("+(canvas_width/2+danger_meter_margin.left)+","+danger_meter_margin.top+")")
 
-
 danger_meter.x = d3.scale.ordinal()
     .domain(player_danger.map(function(d){ return d.player; }))
     .rangeBands([0,danger_meter_width]);
@@ -16,6 +15,13 @@ danger_meter.x = d3.scale.ordinal()
 danger_meter.y = d3.scale.linear()
     .domain([5,0])
     .range([0,danger_meter_height]);
+
+danger_meter.append("svg:line")
+    .attr("x1", 0)
+    .attr("y1", danger_meter.y(danger_threshold))
+    .attr("x2", danger_meter_width)
+    .attr("y2", danger_meter.y(danger_threshold))
+    .style("stroke", "rgb(6,120,155)");
 
 var xAxis = d3.svg.axis()
 	    .scale(danger_meter.x)
