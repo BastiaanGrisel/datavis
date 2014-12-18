@@ -4,7 +4,7 @@ function drawPOI(radius, treshhold){
 	player_danger = [];
 
 	players_all.forEach(function(player){
-		player_danger.push({"player":player.name, "danger":dangerMeter(player,radius)});
+		player_danger.push({"player":player.player, "danger":dangerMeter(player,radius)});
 
 		battle = getPlayersInRadius(players_all, player, radius);
 		if(battle.length > treshhold) {
