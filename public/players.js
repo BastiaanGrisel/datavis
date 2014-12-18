@@ -1,5 +1,5 @@
 function drawPlayers() {    
-    grid.selectAll(".player").data(players_all).transition().duration(delay) // Update existing elements
+    grid.selectAll(".player").data(players_all).transition().duration(delay).ease("linear") // Update existing elements
         .attr("r", function(d) {
             return grid.x.rangeBand()/2;
         })
