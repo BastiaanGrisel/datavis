@@ -75,7 +75,7 @@
 			all_players.forEach(function(player){
 				battle = getPlayersInRadius(all_players, player, radius);
 				if(battle.length > treshhold) {
-					console.log(dangerMeter(player,radius));
+					//console.log(dangerMeter(player,radius));
 					if (dangerMeter(player,radius) > (4.5/5)*Math.sqrt(0.4)) { /* 1 additional player closer then 40% of the radius */
 						if (!(include(poi_player,player))) {
 							poi_player.push(player);
@@ -83,23 +83,49 @@
 					}
 				}					
 			});
-			if(!(poi_player == [])) {
+			if(poi_player.length > 0) {
 				console.log("Danger on players:");
 				console.log(poi_player);
+				poi = [];
+				poi_player.forEach(function(p) {
+					poi.push([p.x, p.y, p.team]);
+				});
+				poi = cluster(poi, radius);
 			}
 			return 0;
 		}
-		/*
-		function distance_vector(player) { // For debugging 
-			console.log("red team:\n");
-			red_team.forEach(function(p){
-				console.log(playerDistance(player,p)+"\n");
-			});
-			console.log("red team:\n");
-			blue_team.forEach(function(p){
-				console.log(playerDistance(player,p)+"\n");
-			});
-		}*/
+		
+		function cluster(poi, radius) {
+			clustered_poi = [];
+			cl_flag = false;
+			poi.forEach(function(point) {
+				other = poi.slice(0); //clone array
+				if (other.length > 1) { //more then one point!
+					other.splice(poi.indexOf(point),1); //remove point
+					other.forEach(function(point2) { 
+						if(point2[2] == point[2] && Math.sqrt((point2[0]-point[0])*(point2[0]-point[0])+(point2[1]-point[1])*(point2[1]-point[1])) < radius) { //if the same team and within radius
+							cl_flag = true;
+							new_point = [(point2[0]+point[0])/2,(point2[1]+point[1])/2,point[2]]; //take mean coordinate
+							if (!(include_point(clustered_poi,new_point))) {
+								clustered_poi.push(new_point); //add unique point
+							}
+						} else {
+							if (!(include_point(clustered_poi,point))) {
+								clustered_poi.push(point); 
+							}
+						}
+					})
+				} else { // no others
+					if (!(include_point(clustered_poi,point))) {
+						clustered_poi.push(point); //add unique point
+					}
+				}
+			}) 
+			if(cl_flag) {
+				clustered_poi = cluster(clustered_poi, radius) //recursive call if there was clustering
+			}
+			return clustered_poi;
+		}
 		
 		function dangerMeter(player,radius) {
 			if(include(red_team, player)) {
@@ -126,6 +152,16 @@
 		
 		function include(arr,obj) {
 			return (arr.indexOf(obj) != -1);
+		}
+		
+		function include_point(arr,p2) {
+			found = false;
+			arr.forEach(function(p) {
+				if(p[0] == p2[0] && p[1] == p2[1] && p[2] == p2[2]){
+					found = true;
+				}
+			});
+			return found;
 		}
 		
 		function getPlayersInRadius(players, player, radius) {
