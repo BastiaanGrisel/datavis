@@ -8,7 +8,7 @@ var http 	= require("http"),
 
 
 // Serve grid 
-router.get("/grid", function(request, response) {
+router.get("/", function(request, response) {
 	response.writeHead(200, {"Content-Type": "text/html"});
 
 	getMatches(function onMatches(err, records) {
@@ -109,4 +109,4 @@ function getTimepoints(match, callback) {
 	db.locations.distinct('tsync', { 'match': match }, callback);
 }
 
-server.listen(80);
+server.listen(3000);
