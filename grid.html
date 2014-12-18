@@ -18,16 +18,23 @@
 		</div>
 	</div>
 
+	<script>
+		baseurl 	  = "http://localhost/";
+		canvas_width  = document.getElementById("svg_container").clientWidth;
+		canvas_height = document.getElementById("svg_container").clientHeight;
+	</script>
+
 	<script src="grid.js" type="text/javascript"></script>
+	<script src="players.js" type="text/javascript"></script>
+
 	<script src="danger.js" type="text/javascript"></script>
 	<script src="dangergraph.js" type="text/javascript"></script>
+
 	<script src="distance.js" type="text/javascript"></script>
 	<script src="distancegraph.js" type="text/javascript"></script>
 
 	<script>
-		// Populate grid
-		var baseurl 	= "http://localhost/";
-
+		// Event handlers
 		var match_el 		= document.getElementById('matches'),
 			start_time_el 	= document.getElementById('start_time'),
 			offset_el		= document.getElementById('offset');
@@ -36,7 +43,7 @@
 
         d3.select("#start_time").on("change", getPlayerPositions);	
         d3.select("#offset").on("change", getPlayerPositions);	
-		        d3.select("#matches").on("change", onMatchChanged);
+		d3.select("#matches").on("change", onMatchChanged);
 
         function onMatchChanged(){ 
 			var selected_match = parseInt(match_el.options[match_el.selectedIndex].value);
@@ -54,6 +61,7 @@
 	        });
         }
 
+        // Populate views
 		var all_players;
 		var red_team = [];
 		var blue_team = [];
