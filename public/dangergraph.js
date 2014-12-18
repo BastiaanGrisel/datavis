@@ -1,6 +1,6 @@
-var danger_meter_margin = {top: 10, right: 10, bottom: 10, left: 30};
-var danger_meter_height = canvas_height - danger_meter_margin.right - danger_meter_margin.left;
-var danger_meter_width  = canvas_width/2 - danger_meter_margin.top - danger_meter_margin.bottom;
+var danger_meter_margin = {top: 30, right: 10, bottom: 30, left: 30};
+var danger_meter_height = canvas_height - danger_meter_margin.top - danger_meter_margin.bottom;
+var danger_meter_width  = canvas_width/2 - danger_meter_margin.right - danger_meter_margin.left;
 
 danger_meter = svg.append("g")
 				.attr("class", "danger_meter")
