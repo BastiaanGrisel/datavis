@@ -1,7 +1,7 @@
 function findPOI(radius, treshhold){
 	poi_player = [];
-	all_players.forEach(function(player){
-		battle = getPlayersInRadius(all_players, player, radius);
+	players_all.forEach(function(player){
+		battle = getPlayersInRadius(players_all, player, radius);
 		if(battle.length > treshhold) {
 			//console.log(dangerMeter(player,radius));
 			if (dangerMeter(player,radius) > (4.5/5)*Math.sqrt(0.4)) { /* 1 additional player closer then 40% of the radius */
@@ -56,12 +56,12 @@ function cluster(poi, radius) {
 }
 
 function dangerMeter(player,radius) {
-	if(include(red_team, player)) {
-		allies = red_team;
-		enemies = blue_team;
+	if(include(players_dire, player)) {
+		allies = players_dire;
+		enemies = players_radiant;
 	} else {
-		allies = blue_team;
-		enemies = red_team;
+		allies = players_radiant;
+		enemies = players_dire;
 	}
 	d_allies = 0;
 	d_enemies = 0;

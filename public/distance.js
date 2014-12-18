@@ -1,12 +1,3 @@
-grid_defs = grid.append("defs")
-
-grid_defs.append("mask")
-    .attr("id", "grid_mask")
-    .append("rect")
-    .attr("fill", "white")
-    .attr("height", grid_height)
-    .attr("width", grid_width) 
-
 function drawDistances(tiles) {
     var teams = d3.nest()
         .key(function(d){ return d.team })
