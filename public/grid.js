@@ -4,11 +4,6 @@ var size = [128,128],
     radiant_base_px  = [0, grid_height],
     dire_base_px     = [grid_width, 0];
 
-// Create a D3 container
-svg = d3.select("#svg_container").append("svg")
-    .attr("width", canvas_width)
-    .attr("height", canvas_height)
-
 // Create a square container
 grid = svg.append("g")
     .attr("class", "grid")
@@ -37,11 +32,11 @@ var image = grid.append("svg:image")
     .attr("opacity", "0.4")
 
 // Define domain and range for the position of the tiles
-var x = d3.scale.ordinal()
+grid.x = d3.scale.ordinal()
     .domain(d3.range(size[0]))
     .rangeBands([0,grid_width]);
 
-var y = d3.scale.ordinal()
+grid.y = d3.scale.ordinal()
     .domain(d3.range(size[1]))
     .rangeBands([grid_height,0]);
 
@@ -51,6 +46,6 @@ var color = d3.scale.category10();
 function updateGrid() {
     drawPlayers();
     drawLinks();
-    drawDistanceCircles();
+    // drawDistanceCircles();
     drawPOI(15, 2);
 }

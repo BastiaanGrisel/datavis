@@ -27,6 +27,12 @@
 		players_radiant = []; //radiant blue
 		players_all 	= [];
 		match_info		= [];
+		player_danger   = [];
+
+		// Create a D3 container
+		svg = d3.select("#svg_container").append("svg")
+		    .attr("width", canvas_width)
+		    .attr("height", canvas_height)
 	</script>
 
 	<script src="grid.js" type="text/javascript"></script>
@@ -35,8 +41,8 @@
 	<script src="danger.js" type="text/javascript"></script>
 	<script src="dangergraph.js" type="text/javascript"></script>
 
-	<script src="distance.js" type="text/javascript"></script>
-	<script src="distancegraph.js" type="text/javascript"></script>
+<!-- 	// <script src="distance.js" type="text/javascript"></script>
+	// <script src="distancegraph.js" type="text/javascript"></script> -->
 
 	<script>
 		// Init code
@@ -67,6 +73,7 @@
 				players_radiant = players_all.filter(function(player) { return player.team == "radiant"; })
 
 				updateGrid();
+				drawDangerGraph();
 			})
 		}
 

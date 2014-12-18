@@ -1,7 +1,11 @@
 function drawPOI(radius, treshhold){
 	poi = [];
 	poi_player = [];
+	player_danger = [];
+
 	players_all.forEach(function(player){
+		player_danger.push({"player":player.name, "danger":dangerMeter(player,radius)});
+
 		battle = getPlayersInRadius(players_all, player, radius);
 		if(battle.length > treshhold) {
 			//console.log(dangerMeter(player,radius));
@@ -22,17 +26,17 @@ function drawPOI(radius, treshhold){
 	
 	grid.selectAll(".poi")
 		.data(poi)
-			.attr("cx", function(d){ return x(d[0]); })
-			.attr("cy", function(d){ return y(d[1]); })
-			.attr("r", x(radius))
+			.attr("cx", function(d){ return grid.x(d[0]); })
+			.attr("cy", function(d){ return grid.y(d[1]); })
+			.attr("r", grid.x(radius))
 			.attr("fill", function(d){ return d[2] == "radiant" ? "blue" : "red" })
 			.attr("stroke", function(d){ return d[2] == "radiant" ? "blue" : "red" })
 		.enter()
 			.append("circle")
 			.attr("class", "poi")
-			.attr("cx", function(d){ return x(d[0]); })
-			.attr("cy", function(d){ return y(d[1]); })
-			.attr("r", x(radius))
+			.attr("cx", function(d){ return grid.x(d[0]); })
+			.attr("cy", function(d){ return grid.y(d[1]); })
+			.attr("r", grid.x(radius))
 			.attr("fill", function(d){ return d[2] == "radiant" ? "blue" : "red" })
 			.attr("stroke", function(d){ return d[2] == "radiant" ? "blue" : "red" })
 			.attr("fill-opacity", "0.1")
