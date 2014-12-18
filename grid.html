@@ -26,7 +26,7 @@
 		players_dire 	= []; //dire red
 		players_radiant = []; //radiant blue
 		players_all 	= [];
-
+		match_info		= [];
 	</script>
 
 	<script src="grid.js" type="text/javascript"></script>
@@ -49,25 +49,25 @@
 
 		function onChangeMatch() {
 			// Populate Timepoints and player positions
-			// d3.json(baseurl + "timepoints/" + selected_match, function (json) {
-			// 	getPlayerPositions();
-	  //       });
+			d3.json(baseurl + "timepoints/" + getSelectedMatch(), function (json) {
+				document.getElementById('start_time').min = d3.min(json);
+				document.getElementById('start_time').max = d3.max(json);
+	        });
 
-	  //       // Draw distance graph
-	  //       d3.json(baseurl + "distances/" + selected_match, function (json) {
-			// 	drawDistanceGraph(json);
-	  //       });
+	        // Update the grid
+	        changeTime();
 		}
 
 		function onChangeTime() {
 			d3.json(baseurl + "locations/" + getSelectedMatch() + "/" + getSelectedTime() + "/" + (getSelectedTime()+getSelectedOffset()), function (json) {
 
+				match_info 		= json;
 				players_all 	= json.filter(function(player) { return player.tsync == getSelectedTime(); });
 				players_dire 	= players_all.filter(function(player) { return player.team == "dire"; })
 				players_radiant = players_all.filter(function(player) { return player.team == "radiant"; })
 
 				// findPOI(25, 2);  players and teams are global, range 10, more then 3 players 
-				// updateGrid(tiles);
+				updateGrid();
 			})
 		}
 

@@ -1,10 +1,5 @@
-function drawPlayers(tiles) {
-     // Add players
-    var players = tiles.filter(function(d) {
-        return d.visible;
-    })
-
-    grid.selectAll(".player").data(players) // Update existing elements
+function drawPlayers() {    
+    grid.selectAll(".player").data(players_all) // Update existing elements
         .attr("r", function(d) {
             return x.rangeBand()/2;
         })
@@ -34,8 +29,7 @@ function drawPlayers(tiles) {
         })
 
     // Remove redundant circles
-    grid.selectAll(".player").data(players).exit().remove();
-
+    grid.selectAll(".player").data(players_all).exit().remove();
 }
 
 function drawLinks(tiles) {
