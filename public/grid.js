@@ -52,7 +52,7 @@ var color = d3.scale.category10();
 function updateGrid(tiles) {
     drawPlayers(tiles);
     drawLinks(tiles);
-    drawDistances(tiles);
+    // drawDistances(tiles);
 }
 
 function drawDistances(tiles) {
