@@ -27,7 +27,7 @@
 			start_time_el 	= document.getElementById('start_time'),
 			offset_el		= document.getElementById('offset');
 
-		getPlayerPositions();
+		onMatchChanged();
 
         d3.select("#start_time").on("change", getPlayerPositions);	
         d3.select("#offset").on("change", getPlayerPositions);	
@@ -142,7 +142,9 @@
 			return Math.sqrt(Math.pow(p1.y-p2.y,2)+Math.pow(p1.x-p2.x,2)); /* Absolute distance */
 		}
 
-        d3.select("#matches").on("change", function(){ 
+        d3.select("#matches").on("change", onMatchChanged);
+
+        function onMatchChanged(){ 
 			var selected_match = parseInt(match_el.options[match_el.selectedIndex].value);
 
 			d3.json(baseurl + "timepoints/" + selected_match, function (json) {
@@ -152,7 +154,12 @@
 
 				getPlayerPositions();
 	        });
-        });	
+
+	        d3.json(baseurl + "distances/" + selected_match, function (json) {
+				drawDistanceGraph(json);
+	        });
+        }
+
 	</script>
 </body>
 </html>

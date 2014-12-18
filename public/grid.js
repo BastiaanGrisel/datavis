@@ -7,7 +7,7 @@ var size = [128,128],
     dire_base_px = [grid_width, 0];
 
 // Create a D3 container
-var svg = d3.select("#svg_container").append("svg")
+svg = d3.select("#svg_container").append("svg")
     .attr("width", canvas_width)
     .attr("height", canvas_height)
 
@@ -262,3 +262,6 @@ function Link(from, to) {
     this.from = from;
     this.to = to;
 }
+
+
+
