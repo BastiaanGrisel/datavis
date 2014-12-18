@@ -51,5 +51,6 @@ var color = d3.scale.category10();
 function updateGrid() {
     drawPlayers();
     drawLinks();
-    // drawDistances(tiles);
+    drawDistanceCircles();
+    drawPOI(15, 2);
 }

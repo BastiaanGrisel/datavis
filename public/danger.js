@@ -1,4 +1,5 @@
-function findPOI(radius, treshhold){
+function drawPOI(radius, treshhold){
+	poi = [];
 	poi_player = [];
 	players_all.forEach(function(player){
 		battle = getPlayersInRadius(players_all, player, radius);
@@ -11,16 +12,34 @@ function findPOI(radius, treshhold){
 			}
 		}					
 	});
+
 	if(poi_player.length > 0) {
-		console.log("Danger on players:");
-		console.log(poi_player);
-		poi = [];
 		poi_player.forEach(function(p) {
 			poi.push([p.x, p.y, p.team]);
 		});
 		poi = cluster(poi, radius);
 	}
-	return 0;
+	
+	grid.selectAll(".poi")
+		.data(poi)
+			.attr("cx", function(d){ return x(d[0]); })
+			.attr("cy", function(d){ return y(d[1]); })
+			.attr("r", x(radius))
+			.attr("fill", function(d){ return d[2] == "radiant" ? "blue" : "red" })
+			.attr("stroke", function(d){ return d[2] == "radiant" ? "blue" : "red" })
+		.enter()
+			.append("circle")
+			.attr("class", "poi")
+			.attr("cx", function(d){ return x(d[0]); })
+			.attr("cy", function(d){ return y(d[1]); })
+			.attr("r", x(radius))
+			.attr("fill", function(d){ return d[2] == "radiant" ? "blue" : "red" })
+			.attr("stroke", function(d){ return d[2] == "radiant" ? "blue" : "red" })
+			.attr("fill-opacity", "0.1")
+			.attr("stroke-opacity", "0.8")
+			.attr("stroke-width", 1)
+
+	grid.selectAll(".poi").data(poi).exit().remove();
 }
 
 function cluster(poi, radius) {
