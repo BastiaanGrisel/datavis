@@ -1,5 +1,5 @@
 function drawPlayers() {    
-    grid.selectAll(".player").data(players_all) // Update existing elements
+    grid.selectAll(".player").data(players_all).transition().duration(delay) // Update existing elements
         .attr("r", function(d) {
             return grid.x.rangeBand()/2;
         })
@@ -10,9 +10,9 @@ function drawPlayers() {
             return grid.y(d.y);
         })
         .attr("fill", function(d,i) {
-            return d.team == "poi" ? "green" : (d.team == "radiant" ? "blue" : "red");
-        })
-    .enter() // Add new circles if necessary
+            return d.team == "radiant" ? "blue" : "red";
+        });
+    grid.selectAll(".player").data(players_all).enter() // Add new circles if necessary
         .append("circle")
         .attr("class", "player")
         .attr("r", function(d) {
