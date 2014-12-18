@@ -1,5 +1,5 @@
 var size = [128,128],
-	grid_width    = canvas_width < canvas_height ? canvas_width : canvas_height,
+	grid_width    = Math.min(canvas_width < canvas_height ? canvas_width : canvas_height, canvas_width/2),
 	grid_height   = grid_width,
     radiant_base_px  = [0, grid_height],
     dire_base_px     = [grid_width, 0];

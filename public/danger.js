@@ -2,9 +2,10 @@ function drawPOI(radius, treshhold){
 	poi = [];
 	poi_player = [];
 	player_danger = [];
+	danger_threshold = 0.4;
 
 	players_all.forEach(function(player){
-		player_danger.push({"player":player.player, "danger":dangerMeter(player,radius)});
+		player_danger.push({"player":player.player, "team":player.team, "danger":dangerMeter(player,radius)});
 
 		battle = getPlayersInRadius(players_all, player, radius);
 		if(battle.length > treshhold) {
@@ -16,6 +17,8 @@ function drawPOI(radius, treshhold){
 			}
 		}					
 	});
+
+	player_danger.sort(function(d) { return d.team == "radiant" ? 1 : -1});
 
 	if(poi_player.length > 0) {
 		poi_player.forEach(function(p) {
